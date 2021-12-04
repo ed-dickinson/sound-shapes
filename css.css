@@ -1,0 +1,113 @@
+@font-face {  font-family: daydream;  src: url(assets/Daydream.ttf); }
+@font-face {font-family: pixelmix; src: url(assets/pixelmix.ttf);}
+@font-face {font-family: dogica; src: url(assets/dogica.otf);}
+
+body {
+  font-family: daydream;
+}
+
+#canvas {
+  /* background-color: papayawhip; */
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0; left: 0;
+}
+#time-line {
+  width: 3px; height: 100%; position: absolute; background-color: lightgrey;
+}
+
+.shape {
+  height: 20px; display: inline-block; width: 20px; position: absolute;
+}
+.red {
+  /* background-color: tomato; */
+  fill: tomato;
+}
+.yellow {
+  fill: gold;
+}
+.blue {
+  fill: dodgerblue;
+}
+.circle {
+  border-radius: 50%;
+}
+.triangle {
+
+}
+
+
+
+svg.triangle {
+  /* viewBox: */
+}
+svg.triangle path {
+  d: path('M 0 2 L 0 0 L 2 2');
+}
+svg.sw-triangle path {
+  d: path('M 0 2 L 0 0 L 2 2');
+}
+svg.nw-triangle path {
+  d: path('M 0 0 L 2 0 L 0 2');
+}
+svg.ne-triangle path {
+  d: path('M 2 0 L 0 0 L 2 2');
+}
+svg.se-triangle path {
+  d: path('M 2 2 L 2 0 L 0 2');
+}
+
+svg.circle-sw path {
+  d: path('M 0 0 A 2 2 0 0 1 2 2 L 0 2');
+}
+svg.circle-nw path {
+  d: path('M 2 0 A 2 2 0 0 1 0 2 L 0 0');
+}
+svg.circle-ne path {
+  d: path('M 2 2 A 2 2 0 0 1 0 0 L 2 0');
+}
+svg.circle-se path {
+  d: path('M 0 2 A 2 2 0 0 1 2 0 L 2 2');
+}
+
+svg.square path {
+  d: path('M 0 0 L 2 0 L 2 2 L 0 2');
+}
+svg.circle path {
+  d: path('M 2 1 A 1 1 0 0 1 0 1 A 1 1 0 0 1 2 1');
+}
+
+#shape-picker {
+  position: fixed;
+  bottom: 5px; left: 5px;
+  border: 3px solid black; padding: 5px 5px 0;
+  z-index: 4;
+  background-color: white;
+}
+#shape-picker .shape {
+  position: relative;
+}
+
+#cloner {
+  display: none;
+}
+
+.cloner-cont {
+  width: 50px; height: 50px;
+  position: absolute;
+  display: inline-block;
+}
+
+#timer {
+  position: fixed; bottom: 5px; right: 5px;
+}
+
+/* CURSORS */
+
+#canvas {
+  cursor: cell;
+}
+svg {
+  cursor: pointer;
+}
