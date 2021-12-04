@@ -47,8 +47,16 @@ const Shape = (x, y) => {
 
     // clone.style.cursor = 'grab';
     mousedown = {x: event.x, y: event.y};
-    canvas.addEventListener('mousemove', moveShape);
-    canvas.addEventListener('mouseup', moveEnd);
+    let m = 20;
+    if (event.x > w - m && event.y > h - m) {
+      clearTimeout(click_hold_timer)
+      canvas.addEventListener('mousemove', resizeSE);
+      canvas.addEventListener('mouseup', resizeSEDone);
+    } else {
+      canvas.addEventListener('mousemove', moveShape);
+      canvas.addEventListener('mouseup', moveEnd);
+    }
+
     clone.removeEventListener('mousemove', changeResizeCursor);
   })
 
@@ -70,8 +78,22 @@ const Shape = (x, y) => {
     clone.addEventListener('mousemove', changeResizeCursor);
   }
 
+  const resizeSE = () => {
+    clone.style.width = w - x - (mousedown.x - event.x);
+    clone.style.height = h - y - (mousedown.y - event.y);
+  }
 
+  const resizeSEDone = () => {
+    canvas.removeEventListener('mousemove', resizeSE);
+    // clearTimeout(click_hold_timer);
+    clone.style.cursor = 'pointer';
+    w -= (mousedown.x - event.x);
+    h -= (mousedown.y - event.y);
+    canvas.removeEventListener('mouseup', resizeSEDone)
+    clone.addEventListener('mousemove', changeResizeCursor);
+  }
 
+  let resizing
   const changeResizeCursor = () => {
     let m = 20; // margin
     if (event.x < x + m && event.y < y + m) {
