@@ -3,7 +3,7 @@ const canvas = document.querySelector('#canvas');
 const rendered_shapes = [];
 
 // const shapes = [{name: 'circle', path:name: 'square'}]
-const shapes = ['circle-sw','circle-nw','circle-ne','circle-se','square','sw-triangle','nw-triangle','ne-triangle','se-triangle']
+const shapes = ['circle-sw','circle-nw','circle-ne','circle-se','square','triangle-sw','triangle-nw','triangle-ne','triangle-se']
 const colours = ['blue','red','yellow']
 let colours_i = 0;
 
@@ -11,20 +11,21 @@ const initial_size = 20;
 
 const cloner = document.querySelector('#cloner .shape')
 
-const Shape = (x, y) => {
+const Shape = (x, y, w, h, colour, shape) => {
 
-  let shape = 'square';
-  let colour = colours[colours_i];
-  colours_i === colours.length - 1 ? colours_i = 0 : colours_i++;
+
+  // let shape = 'square';
+  // let colour = colours[colours_i];
+  // colours_i === colours.length - 1 ? colours_i = 0 : colours_i++;
 
   let clone = cloner.cloneNode(true);
 
-  let w = 0, h = 0;
+  // let w = 0, h = 0;
 
   clone.style.left = x + 'px';
   clone.style.top = y + 'px';
-  clone.style.width = 0 + 'px';
-  clone.style.height = 0 + 'px';
+  clone.style.width = w - x + 'px';
+  clone.style.height = h - y + 'px';
 
   clone.classList.remove('blue');
   clone.classList.add(colour);
@@ -34,9 +35,6 @@ const Shape = (x, y) => {
 
   let target = undefined;
   let click_hold = undefined;
-  // clone.addEventListener('click', ()=>{
-  //   click_hold ? changeColour() : changeShape();
-  // })
 
   let click_hold_timer;
   clone.addEventListener('mousedown', ()=>{
@@ -45,7 +43,6 @@ const Shape = (x, y) => {
     clearTimeout(click_hold_timer)
     click_hold_timer = setTimeout(()=>{click_hold = true; clone.style.cursor = 'alias';},300)
 
-    // clone.style.cursor = 'grab';
     mousedown = {x: event.x, y: event.y};
     let m = 20;
     // if (event.x > w - m && event.y > h - m) {
@@ -203,16 +200,16 @@ const Shape = (x, y) => {
     clone.style.left = x - (mousedown.x - event.x);
     clone.style.top = y - (mousedown.y - event.y);
   }
-  const getCoords = () => {
-    return {x: clone.style.left}
+  const getDetails = () => {
+    return {x, y, w, h, c: colour, s: shape}
   }
   // console.log(shape)
-  return {changeShape, x,y,w,h, changeSize, getCoords, dom}
+  return {changeShape, x,y,w,h, changeSize, getDetails, dom}
 }
 
-const createShape = (x, y) => {
+const createShape = (x, y, w, h, colour, shape) => {
   // console.log(x, y)
-  let new_shape = Shape(x, y);
+  let new_shape = Shape(x, y, w, h, colour, shape);
   new_shape.dom.addEventListener('mousedown',()=>{console.log(new_shape)})
   rendered_shapes.push(new_shape)
   return new_shape;
@@ -248,12 +245,16 @@ canvas.addEventListener('mousedown', () => {
     // if (mousedown.x > selected_shape)
   } else {
     mousedown = {x: event.x, y: event.y};
-    selected_shape = createShape(event.x, event.y);
+
+    selected_shape = createShape(event.x, event.y, event.x, event.y, colours[colours_i], 'square');
+    //change colour on new shape
+    colours_i === colours.length - 1 ? colours_i = 0 : colours_i++;
     canvas.addEventListener('mousemove', dragSize)
   }
 
 })
 
+// this sizes the shape on click creation
 const dragSize = () => {
     console.log('dragSize')
     let x = mousedown.x < event.x ? mousedown.x : event.x;
@@ -308,6 +309,32 @@ timelineMove();
 //   }, 100)
 // }
 // updateTimeDisplay()
+
+const log_button = document.querySelector('#log-button');
+
+log_button.addEventListener('click',()=>{
+  let array_of_shapes = [];
+  rendered_shapes.forEach(shape => {
+    let details = shape.getDetails();
+    array_of_shapes.push(details);
+  })
+  // console.log('log button', rendered_shapes)
+  console.log('shapes:', array_of_shapes)
+})
+
+const load_button = document.querySelector('#load-button');
+
+let test_shapes = [
+  {x:100,y:100,w:200,h:200,s:'square',c:'blue'},
+  {x:150,y:250,w:300,h:350,s:'square',c:'red'},
+];
+
+load_button.addEventListener('click',()=>{
+  test_shapes.forEach(shape => {
+    let new_shape = createShape(shape.x, shape.y, shape.w, shape.h, shape.c, shape.s)
+    rendered_shapes.push(new_shape);
+  })
+})
 
 
 //////////////////////////////////////////////////////////////

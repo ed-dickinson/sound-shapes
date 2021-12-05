@@ -45,16 +45,16 @@ svg.triangle {
 svg.triangle path {
   d: path('M 0 2 L 0 0 L 2 2');
 }
-svg.sw-triangle path {
+svg.triangle-sw path {
   d: path('M 0 2 L 0 0 L 2 2');
 }
-svg.nw-triangle path {
+svg.triangle-nw path {
   d: path('M 0 0 L 2 0 L 0 2');
 }
-svg.ne-triangle path {
+svg.triangle-ne path {
   d: path('M 2 0 L 0 0 L 2 2');
 }
-svg.se-triangle path {
+svg.triangle-se path {
   d: path('M 2 2 L 2 0 L 0 2');
 }
 
@@ -101,6 +101,13 @@ svg.circle path {
 
 #timer {
   position: fixed; bottom: 5px; right: 5px;
+}
+
+#function-buttons {
+  position: fixed; bottom: 5px; left: 5px; font-size: 0.7em;
+}
+#function-buttons span {
+  cursor: help;
 }
 
 /* CURSORS */
