@@ -48,10 +48,23 @@ const Shape = (x, y) => {
     // clone.style.cursor = 'grab';
     mousedown = {x: event.x, y: event.y};
     let m = 20;
-    if (event.x > w - m && event.y > h - m) {
+    // if (event.x > w - m && event.y > h - m) {
+    if (resizing === 'se') {
       clearTimeout(click_hold_timer)
       canvas.addEventListener('mousemove', resizeSE);
       canvas.addEventListener('mouseup', resizeSEDone);
+    } else if (resizing === 'sw') {
+      clearTimeout(click_hold_timer);
+      canvas.addEventListener('mousemove', resizeSW);
+      canvas.addEventListener('mouseup', resizeSWDone);
+    } else if (resizing === 'nw') {
+      clearTimeout(click_hold_timer);
+      canvas.addEventListener('mousemove', resizeNW);
+      canvas.addEventListener('mouseup', resizeNWDone);
+    } else if (resizing === 'ne') {
+      clearTimeout(click_hold_timer);
+      canvas.addEventListener('mousemove', resizeNE);
+      canvas.addEventListener('mouseup', resizeNEDone);
     } else {
       canvas.addEventListener('mousemove', moveShape);
       canvas.addEventListener('mouseup', moveEnd);
@@ -69,7 +82,6 @@ const Shape = (x, y) => {
       w -= (mousedown.x - event.x);
       h -= (mousedown.y - event.y);
       clone.style.cursor = 'pointer';
-      console.log(x, y, w, h, clone)
     } else {
       clone.style.cursor = 'pointer';
       click_hold ? changeColour() : changeShape();
@@ -85,7 +97,6 @@ const Shape = (x, y) => {
 
   const resizeSEDone = () => {
     canvas.removeEventListener('mousemove', resizeSE);
-    // clearTimeout(click_hold_timer);
     clone.style.cursor = 'pointer';
     w -= (mousedown.x - event.x);
     h -= (mousedown.y - event.y);
@@ -93,18 +104,69 @@ const Shape = (x, y) => {
     clone.addEventListener('mousemove', changeResizeCursor);
   }
 
-  let resizing
+  const resizeSW = () => {
+    clone.style.left = x - (mousedown.x - event.x);
+    clone.style.width = w - x + (mousedown.x - event.x);
+    clone.style.height = h - y - (mousedown.y - event.y);
+  }
+
+  const resizeSWDone = () => {
+    canvas.removeEventListener('mousemove', resizeSW);
+    clone.style.cursor = 'pointer';
+    x -= (mousedown.x - event.x);
+    h -= (mousedown.y - event.y);
+    canvas.removeEventListener('mouseup', resizeSWDone);
+    clone.addEventListener('mousemove', changeResizeCursor);
+  }
+
+  const resizeNW = () => {
+    clone.style.left = x - (mousedown.x - event.x);
+    clone.style.top = y - (mousedown.y - event.y);
+    clone.style.width = w - x + (mousedown.x - event.x);
+    clone.style.height = h - y + (mousedown.y - event.y);
+  }
+
+  const resizeNWDone = () => {
+    canvas.removeEventListener('mousemove', resizeNW);
+    clone.style.cursor = 'pointer';
+    x -= (mousedown.x - event.x);
+    y -= (mousedown.y - event.y);
+    canvas.removeEventListener('mouseup', resizeNWDone);
+    clone.addEventListener('mousemove', changeResizeCursor);
+  }
+
+  const resizeNE = () => {
+    clone.style.top = y - (mousedown.y - event.y);
+    clone.style.width = w - x - (mousedown.x - event.x);
+    clone.style.height = h - y + (mousedown.y - event.y);
+  }
+
+  const resizeNEDone = () => {
+    canvas.removeEventListener('mousemove', resizeNE);
+    clone.style.cursor = 'pointer';
+    w -= (mousedown.x - event.x);
+    y -= (mousedown.y - event.y);
+    canvas.removeEventListener('mouseup', resizeNEDone);
+    clone.addEventListener('mousemove', changeResizeCursor);
+  }
+
+  let resizing;
   const changeResizeCursor = () => {
     let m = 20; // margin
     if (event.x < x + m && event.y < y + m) {
+      resizing = 'nw';
       clone.style.cursor = 'nw-resize';
     } else if (event.x > w - m && event.y < y + m) {
+      resizing = 'ne';
       clone.style.cursor = 'ne-resize';
     } else if (event.x > w - m && event.y > h - m) {
+      resizing = 'se';
       clone.style.cursor = 'se-resize';
     } else if (event.x < x + m && event.y > h - m) {
+      resizing = 'sw';
       clone.style.cursor = 'sw-resize';
     } else {
+      resizing = null;
       clone.style.cursor = 'pointer';
     }
   }
