@@ -338,10 +338,13 @@ let test_shapes = [
   {x:650,y:250,w:750,h:500,s:'square',c:'red'},
 ];
 
-load_button.addEventListener('click',()=>{
+const loadTestShapes = () => {
   test_shapes.forEach(shape => {
     let new_shape = createShape(shape.x, shape.y, shape.w, shape.h, shape.c, shape.s)
     // rendered_shapes.push(new_shape);
   })
   getShapes();
-})
+}
+
+load_button.addEventListener('click',loadTestShapes);
+loadTestShapes();

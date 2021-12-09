@@ -23,6 +23,9 @@ for (let i = 0; i < buffer.length; i++) {
 const primaryGainControl = audioContext.createGain();
 primaryGainControl.gain.setValueAtTime(0.05, 0);
 
+const secondaryGainControl = audioContext.createGain();
+secondaryGainControl.gain.setValueAtTime(0.012, 0);
+
 const squareButton = document.querySelector('#shape-picker .square');
 squareButton.addEventListener('click', () => {
   console.log('square');
@@ -81,6 +84,7 @@ const playTriangleNW = () => {
 }
 
 primaryGainControl.connect(audioContext.destination);
+secondaryGainControl.connect(audioContext.destination);
 
 
 ////////
@@ -119,8 +123,24 @@ let current_note = 0;
 
 let schedule_time = 0;
 
-const scheduleNote = () => {
+const scheduleShape = ({s, c, x, y, w, h}, time) => {
+  const oscillator = audioContext.createOscillator();
+  console.log('scheduling:', c, s);
+  // oscillator.type = s.includes('triangle') ? 'triangle' : s.includes('circle') ? 'sine' : 'square';
+  oscillator.type = c === 'blue' ? 'square' : c === 'red' ? 'sine' : 'triangle';
+  // oscillator.gain
+  oscillator.frequency.setValueAtTime(canvas_height - y, 0);
+  // oscillator.frequency.linearRampToValueAtTime(261.6, audioContext.currentTime + 0.25)
 
+  const gain = audioContext.createGain();
+  gain.gain.setValueAtTime(0.1, time);
+  // gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.25);
+  oscillator.connect(gain);
+
+  oscillator.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
+  oscillator.start(time);
+  let shape_length = ((w - x) / 100);
+  oscillator.stop(time + shape_length);
 }
 
 const moveScheduler = () => {
@@ -148,8 +168,10 @@ const scheduler = () => {
       (shape.x > playhead && shape.x < playhead + lookahead)
       && !shapes_scheduled.includes(shape)
     ) {
+      let time = ((shape.x - playhead) / 100) + current_time;
+      scheduleShape(shape, time);
       shapes_scheduled.push(shape);
-      console.log(shape)
+      // console.log(shape)
     }
   })
 
@@ -157,7 +179,7 @@ const scheduler = () => {
   if (last_schedule > playhead) {
     loop++;
     schedule_dom.reset();
-    scheduled_shapes = [];
+    shapes_scheduled = [];
   }
 
 
