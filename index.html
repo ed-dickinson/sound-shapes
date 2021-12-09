@@ -7,7 +7,7 @@
 <meta name="description" content="">
 <meta name="author" content="Ed Dickinson">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="">
+<link rel="icon" href="assets/icon1-128.png">
 <link rel="stylesheet" type="text/css" href="css.css"/>
 <style>
 
@@ -27,12 +27,12 @@
 
   <!-- <svg class="triangle red" viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg"><path d='M 0 2 L 1 0 L 2 2'></path></svg> -->
 
-  <!-- <div id="shape-picker">
-    <svg class="shape circle yellow" viewBox="0 0 2 2"><path></path></svg>
+  <div id="shape-picker">
+    <svg class="shape circle-se yellow" viewBox="0 0 2 2"><path></path></svg>
     <svg class="shape square blue" viewBox="0 0 2 2"><path></path></svg>
-    <svg class="shape triangle red" viewBox="0 0 2 2"><path></path></svg>
+    <svg class="shape triangle-sw red" viewBox="0 0 2 2"><path></path></svg>
 
-  </div> -->
+  </div>
 
 
   <div id="canvas">
@@ -44,6 +44,17 @@
 <div id="timer">
   <span id="timer1">xxx</span>
   <span id="timer2">xxx</span>
+</div>
+
+<div id="log-display">
+  LOG:
+  <div id="log">
+
+  </div>
+</div>
+
+<div id="schedule">
+
 </div>
 
   <!-- <div id="readout">
@@ -70,7 +81,7 @@
     <span id="log-button">
       Log Rendered Shapes
     </span>
-     - 
+     -
     <span id="load-button">
       Load Shapes
     </span>
@@ -79,7 +90,8 @@
 
 </main>
 
-<script src="javascript.js"></script>
+<script src="shapes.js"></script>
+<script src="sounds.js"></script>
 
 <script>
 

@@ -1,6 +1,6 @@
 const canvas = document.querySelector('#canvas');
 
-const rendered_shapes = [];
+let rendered_shapes = [];
 
 // const shapes = [{name: 'circle', path:name: 'square'}]
 const shapes = ['circle-sw','circle-nw','circle-ne','circle-se','square','triangle-sw','triangle-nw','triangle-ne','triangle-se']
@@ -150,16 +150,19 @@ const Shape = (x, y, w, h, colour, shape) => {
   let resizing;
   const changeResizeCursor = () => {
     let m = 20; // margin
-    if (event.x < x + m && event.y < y + m) {
+    // changes resize corner hover area if shape is too small
+    let vm = w - x >= 60 ? m : (w - x) / 3; // vertical margin
+    let hm = h - y >= 60 ? m : (h - y) / 3; // horizontal margin
+    if (event.x < x + vm && event.y < y + hm) {
       resizing = 'nw';
       clone.style.cursor = 'nw-resize';
-    } else if (event.x > w - m && event.y < y + m) {
+    } else if (event.x > w - vm && event.y < y + hm) {
       resizing = 'ne';
       clone.style.cursor = 'ne-resize';
-    } else if (event.x > w - m && event.y > h - m) {
+    } else if (event.x > w - vm && event.y > h - hm) {
       resizing = 'se';
       clone.style.cursor = 'se-resize';
-    } else if (event.x < x + m && event.y > h - m) {
+    } else if (event.x < x + vm && event.y > h - hm) {
       resizing = 'sw';
       clone.style.cursor = 'sw-resize';
     } else {
@@ -172,16 +175,13 @@ const Shape = (x, y, w, h, colour, shape) => {
   let dom = clone;
 
   const changeShape = () => {
-    console.log('changeShape')
     clone.classList.remove(shape)
     shapes.indexOf(shape) === shapes.length - 1 ? shape = shapes[0] : shape = shapes[shapes.indexOf(shape)+1];
     clone.classList.add(shape)
   }
   const changeColour = () => {
-    console.log('changeColour', 'from', colour)
     clone.classList.remove(colour)
     colours.indexOf(colour) === colours.length - 1 ? colour = colours[0] : colour = colours[colours.indexOf(colour)+1];
-    console.log('to', colour)
     clone.classList.add(colour)
   }
   const changeSize = (xx,yy,ww,hh) => {
@@ -195,7 +195,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     clone.style.height = hh - yy + 'px';
   }
   const moveShape = () => {
-    console.log('moveShape', mousedown.x, mousedown.y, '>',event.x, event.y)
+    // console.log('moveShape', mousedown.x, mousedown.y, '>',event.x, event.y)
     clone.style.cursor = 'move';
     clone.style.left = x - (mousedown.x - event.x);
     clone.style.top = y - (mousedown.y - event.y);
@@ -210,7 +210,7 @@ const Shape = (x, y, w, h, colour, shape) => {
 const createShape = (x, y, w, h, colour, shape) => {
   // console.log(x, y)
   let new_shape = Shape(x, y, w, h, colour, shape);
-  new_shape.dom.addEventListener('mousedown',()=>{console.log(new_shape)})
+  // new_shape.dom.addEventListener('mousedown',()=>{console.log(new_shape)})
   rendered_shapes.push(new_shape)
   return new_shape;
 }
@@ -221,14 +221,14 @@ canvas.addEventListener('mouseup', () => {
 
 
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
-    console.log(event)
+    // console.log(event)
   } else {
     // createShape(mousedown.x, mousedown.y, event.x, event.y);
     // if drag doesn't happen
     if (mousedown.x === event.x || mousedown.y === event.y) {
       selected_shape.changeSize(mousedown.x - 10,mousedown.y - 10,mousedown.x + 10,mousedown.y + 10);
     }
-    console.log(rendered_shapes)
+    // console.log(rendered_shapes)
   }
 
 }, true)
@@ -256,40 +256,38 @@ canvas.addEventListener('mousedown', () => {
 
 // this sizes the shape on click creation
 const dragSize = () => {
-    console.log('dragSize')
     let x = mousedown.x < event.x ? mousedown.x : event.x;
     let y = mousedown.y < event.y ? mousedown.y : event.y;
     let w = mousedown.x < event.x ? event.x : mousedown.x;
     let h = mousedown.y < event.y ? event.y : mousedown.y;
     selected_shape.changeSize(x,y,w,h);
-
 }
 
 
 
 console.log(canvas.offsetWidth, canvas.offsetHeight)
 
-const timeline = document.querySelector('#time-line');
+// const timeline = document.querySelector('#time-line');
+//
+// // var id = null;
+// // function timelineMove() {
+// //   var elem = timeline;
+// //   var pos = 0;
+// //   clearInterval(id);
+// //   id = setInterval(frame, 10);
+// //   function frame() {
+// //     if (pos >= canvas.offsetWidth) {
+// //       // clearInterval(id);
+// //       pos = 0;
+// //     } else {
+// //       pos++;
+// //       elem.style.left = pos + 'px';
+// //     }
+// //   }
+// // }
+// // timelineMove();
 
-var id = null;
-function timelineMove() {
-  var elem = timeline;
-  var pos = 0;
-  clearInterval(id);
-  id = setInterval(frame, 10);
-  function frame() {
-    if (pos >= canvas.offsetWidth) {
-      // clearInterval(id);
-      pos = 0;
-    } else {
-      pos++;
-      elem.style.left = pos + 'px';
-    }
-  }
-}
-timelineMove();
-
-
+//
 // let msecs = 0;
 // const timer1 = () => {
 //
@@ -313,86 +311,37 @@ timelineMove();
 const log_button = document.querySelector('#log-button');
 
 log_button.addEventListener('click',()=>{
+  console.log('shapes:',getShapes())
+})
+
+let current_shapes = [];
+
+const getShapes = () => {
   let array_of_shapes = [];
   rendered_shapes.forEach(shape => {
     let details = shape.getDetails();
     array_of_shapes.push(details);
   })
-  // console.log('log button', rendered_shapes)
-  console.log('shapes:', array_of_shapes)
-})
+  current_shapes = array_of_shapes;
+  return array_of_shapes;
+}
 
 const load_button = document.querySelector('#load-button');
 
 let test_shapes = [
+  {x:50,y:300,w:90,h:350,s:'square',c:'yellow'},
   {x:100,y:100,w:200,h:200,s:'square',c:'blue'},
   {x:150,y:250,w:300,h:350,s:'square',c:'red'},
+  {x:350,y:150,w:500,h:200,s:'square',c:'yellow'},
+  {x:400,y:350,w:450,h:400,s:'square',c:'blue'},
+  {x:550,y:450,w:600,h:600,s:'square',c:'yellow'},
+  {x:650,y:250,w:750,h:500,s:'square',c:'red'},
 ];
 
 load_button.addEventListener('click',()=>{
   test_shapes.forEach(shape => {
     let new_shape = createShape(shape.x, shape.y, shape.w, shape.h, shape.c, shape.s)
-    rendered_shapes.push(new_shape);
+    // rendered_shapes.push(new_shape);
   })
+  getShapes();
 })
-
-
-//////////////////////////////////////////////////////////////
-
-
-const audioContext = new AudioContext();
-
-const SAMPLE_RATE = audioContext.sampleRate;
-const timeLength = 1; // measured in seconds
-
-const buffer = audioContext.createBuffer(
-  1,
-  SAMPLE_RATE * timeLength,
-  SAMPLE_RATE
-);
-
-const channelData = buffer.getChannelData(0);
-
-for (let i = 0; i < buffer.length; i++) {
-  channelData[i] = Math.random() * 2 - 1;
-}
-
-const primaryGainControl = audioContext.createGain();
-primaryGainControl.gain.setValueAtTime(0.05, 0);
-
-const squareButton = document.querySelector('#shape-picker .square');
-squareButton.addEventListener('click', () => {
-  console.log('square');
-  const squareOscillator = audioContext.createOscillator();
-  squareOscillator.type = 'square';
-  squareOscillator.frequency.setValueAtTime(261.6, 0);
-  squareOscillator.connect(primaryGainControl);
-  squareOscillator.start();
-  squareOscillator.stop(audioContext.currentTime + 0.5);
-})
-
-const circleButton = document.querySelector('#shape-picker .circle');
-circleButton.addEventListener('click', () => {
-  console.log('circle');
-  const circleOscillator = audioContext.createOscillator();
-  circleOscillator.type = 'sine';
-  circleOscillator.frequency.setValueAtTime(261.6, 0);
-  circleOscillator.connect(primaryGainControl);
-  circleOscillator.start();
-  circleOscillator.stop(audioContext.currentTime + 0.5);
-})
-
-const triangleButton = document.querySelector('#shape-picker .triangle');
-triangleButton.addEventListener('click', () => {
-  console.log('triangle');
-  const triangleOscillator = audioContext.createOscillator();
-  triangleOscillator.type = 'triangle';
-  triangleOscillator.frequency.setValueAtTime(261.6, 0);
-  triangleOscillator.frequency.linearRampToValueAtTime(293.66, audioContext.currentTime + 0.25) // 293.66 / 349.23
-  triangleOscillator.frequency.linearRampToValueAtTime(291.6, audioContext.currentTime + 0.5)
-  triangleOscillator.connect(primaryGainControl);
-  triangleOscillator.start();
-  triangleOscillator.stop(audioContext.currentTime + 0.5);
-})
-
-primaryGainControl.connect(audioContext.destination);

@@ -118,3 +118,24 @@ svg.circle path {
 svg {
   cursor: pointer;
 }
+
+/* log */
+
+#log-display {
+  position: fixed;
+  top: 5px; right: 5px;
+}
+
+#schedule {
+  width: 100%;
+  top: 0;
+  left: 0; position: fixed;
+}
+
+#schedule .row {
+  height: 5px;
+}
+
+#schedule .row .child {
+  height: 5px; background-color: grey; width: 10px; position: absolute; opacity: 0.5;
+}
