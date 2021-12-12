@@ -71,6 +71,19 @@ svg.circle-se path {
   d: path('M 0 2 A 2 2 0 0 1 2 0 L 2 2');
 }
 
+svg.semicircle-n path {
+  d: path('M 0 2 A 1 2 0 0 1 2 2');
+}
+svg.semicircle-e path {
+  d: path('M 0 0 A 2 1 0 0 1 0 2');
+}
+svg.semicircle-s path {
+  d: path('M 2 0 A 1 2 0 0 1 0 0');
+}
+svg.semicircle-w path {
+  d: path('M 2 2 A 2 1 0 0 1 2 0');
+}
+
 svg.square path {
   d: path('M 0 0 L 2 0 L 2 2 L 0 2');
 }

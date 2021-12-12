@@ -127,7 +127,8 @@ let current_note = 0;
 let schedule_time = 0;
 
 const yToFrq = (y) => {
-  let frequency = (canvas_height - y) / (hiFrqLimit - loFrqLimit) * 100;
+  let frequency = (canvas_height - y) * ((hiFrqLimit - loFrqLimit) / 100) * 0.1;
+  console.log(frequency)
   return frequency + loFrqLimit;
 }
 
@@ -147,7 +148,7 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
 
   // oscillator.gain
   oscillator1.frequency.setValueAtTime(yToFrq(y), 0);
-  oscillator2.frequency.setValueAtTime(canvas_height - h, 0);
+  oscillator2.frequency.setValueAtTime(yToFrq(h), 0);
   if (s === 'triangle-nw') {
     oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
   } else if (s === 'triangle-ne') {
@@ -159,6 +160,109 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   } else if (s === 'triangle-sw') {
     oscillator1.frequency.linearRampToValueAtTime(canvas_height - h, time + shape_length)
   }
+    else if (s === 'semicircle-n'|| s ==='semicircle-s') {
+
+      s === 'semicircle-n' ?
+    oscillator1.frequency.setValueAtTime(yToFrq(h), time) :
+    oscillator2.frequency.setValueAtTime(yToFrq(y), time);
+
+    let curve_res = (shape_length*100).toFixed(0);
+    let curveArray = new Float32Array(curve_res); // change this to adjust with shape-length?
+    let height = h - y;
+    let width = w - x;
+    let radius = width / 2;
+    let segments = width / curveArray.length;
+
+    curveArray[0] = s === 'semicircle-n' ? yToFrq(h) : yToFrq(y); //set start and end to known values
+    curveArray[curveArray.length - 1] = s === 'semicircle-n' ? yToFrq(h) : yToFrq(y);
+
+    for (let i = 1; i < curveArray.length - 1; i++) {
+      let x = (segments * i) - (width / 2);
+      let y2 = (radius * radius) - (x * x);
+      let y = Math.sqrt(y2);
+      let adjusted_y = y * ((height/radius))
+      curveArray[i] = s === 'semicircle-n' ? yToFrq(h - adjusted_y) : yToFrq(y + adjusted_y);
+    }
+
+    s === 'semicircle-n' ?
+    oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length) :
+    oscillator2.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+
+  // } else if (s === 'semicircle-s') {
+  // oscillator2.frequency.setValueAtTime(yToFrq(y), time);
+  //
+  // let curveArray = new Float32Array(30); // change this to adjust with shape-length?
+  // let height = h - y;
+  // let width = w - x;
+  // let radius = width / 2;
+  // let segments = width / curveArray.length;
+  //
+  // curveArray[0] = yToFrq(y); //set start and end to known values
+  // curveArray[curveArray.length - 1] = yToFrq(y);
+  //
+  // for (let i = 1; i < curveArray.length - 1; i++) {
+  //   let x = (segments * i) - (width / 2);
+  //   let y2 = (radius * radius) - (x * x);
+  //   let yy = Math.sqrt(y2);
+  //   let adjusted_y = yy * ((height/radius))
+  //   curveArray[i] = yToFrq(y + adjusted_y)
+  // }
+  //
+  // oscillator2.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+
+} else if (s === 'semicircle-e' || s === 'semicircle-w') {
+
+let curve_res = (shape_length*100).toFixed(0);
+let curveArray = new Float32Array(curve_res); // change this to adjust with shape-length?
+let curveArray2 = new Float32Array(curve_res);
+let height = h - y;
+let width = w - x;
+let radius = width;
+let segments = width / curveArray.length;
+
+curveArray[0] = s === 'semicircle-e' ? yToFrq(y) : yToFrq(y + (height/2)); //set start and end to known values
+curveArray2[0] = yToFrq(s === 'semicircle-e' ? h : y + (height/2));
+curveArray[curveArray.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : y);
+curveArray2[curveArray2.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : h);
+
+for (let i = 1; i < curveArray.length - 1; i++) {
+  let x = 'semicircle-e' ? (segments * i) : (segments * i) - width;
+  let y2 = (radius * radius) - (x * x);
+  let yy = Math.sqrt(y2);
+  let adjusted_y = yy * ((height/2)/radius)
+  curveArray[i] = yToFrq(h - (height/2) - adjusted_y)
+  curveArray2[i] = yToFrq(y + (height/2) + adjusted_y)
+}
+
+oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
+
+// } else if (s === 'semicircle-w') {
+//
+// let curveArray = new Float32Array(30); // change this to adjust with shape-length?
+// let curveArray2 = new Float32Array(30);
+// let height = h - y;
+// let width = w - x;
+// let radius = width;
+// let segments = width / curveArray.length;
+//
+// curveArray[0] = yToFrq(y + (height/2)); //set start and end to known values
+// curveArray2[0] = yToFrq(y + (height/2));
+// curveArray[curveArray.length - 1] = yToFrq(y);
+// curveArray2[curveArray2.length - 1] = yToFrq(h);
+//
+// for (let i = 1; i < curveArray.length - 1; i++) {
+//   let x = (segments * i) - width;
+//   let y2 = (radius * radius) - (x * x);
+//   let yy = Math.sqrt(y2);
+//   let adjusted_y = yy * ((height/2)/radius)
+//   curveArray[i] = yToFrq(h - (height/2) - adjusted_y)
+//   curveArray2[i] = yToFrq(y + (height/2) + adjusted_y)
+// }
+//
+// oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+// oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
+}
 
   // let waveShaperNode = audioContext.createWaveShaper();
   // // waveShaperNode.curve = 0;
