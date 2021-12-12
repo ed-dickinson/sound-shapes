@@ -30,6 +30,9 @@ const Shape = (x, y, w, h, colour, shape) => {
   clone.classList.remove('blue');
   clone.classList.add(colour);
 
+  clone.classList.remove('square');
+  clone.classList.add(shape);
+
   canvas.appendChild(clone);
   // must be rendered to have size
 
@@ -85,6 +88,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     }
     canvas.removeEventListener('mouseup', moveEnd);
     clone.addEventListener('mousemove', changeResizeCursor);
+    getShapes();
   }
 
   const resizeSE = () => {
@@ -99,6 +103,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     h -= (mousedown.y - event.y);
     canvas.removeEventListener('mouseup', resizeSEDone)
     clone.addEventListener('mousemove', changeResizeCursor);
+    getShapes();
   }
 
   const resizeSW = () => {
@@ -114,6 +119,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     h -= (mousedown.y - event.y);
     canvas.removeEventListener('mouseup', resizeSWDone);
     clone.addEventListener('mousemove', changeResizeCursor);
+    getShapes();
   }
 
   const resizeNW = () => {
@@ -130,6 +136,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     y -= (mousedown.y - event.y);
     canvas.removeEventListener('mouseup', resizeNWDone);
     clone.addEventListener('mousemove', changeResizeCursor);
+    getShapes();
   }
 
   const resizeNE = () => {
@@ -145,6 +152,7 @@ const Shape = (x, y, w, h, colour, shape) => {
     y -= (mousedown.y - event.y);
     canvas.removeEventListener('mouseup', resizeNEDone);
     clone.addEventListener('mousemove', changeResizeCursor);
+    getShapes();
   }
 
   let resizing;
@@ -212,6 +220,7 @@ const createShape = (x, y, w, h, colour, shape) => {
   let new_shape = Shape(x, y, w, h, colour, shape);
   // new_shape.dom.addEventListener('mousedown',()=>{console.log(new_shape)})
   rendered_shapes.push(new_shape)
+  getShapes(); // update
   return new_shape;
 }
 
@@ -267,46 +276,7 @@ const dragSize = () => {
 
 console.log(canvas.offsetWidth, canvas.offsetHeight)
 
-// const timeline = document.querySelector('#time-line');
-//
-// // var id = null;
-// // function timelineMove() {
-// //   var elem = timeline;
-// //   var pos = 0;
-// //   clearInterval(id);
-// //   id = setInterval(frame, 10);
-// //   function frame() {
-// //     if (pos >= canvas.offsetWidth) {
-// //       // clearInterval(id);
-// //       pos = 0;
-// //     } else {
-// //       pos++;
-// //       elem.style.left = pos + 'px';
-// //     }
-// //   }
-// // }
-// // timelineMove();
 
-//
-// let msecs = 0;
-// const timer1 = () => {
-//
-//   setInterval(() => {msecs++;console.log(msecs)}, 1)
-// }
-// timer1()
-//
-// const timer_display = document.querySelector('#timer');
-//
-// let load_time = new Date();
-//
-// const updateTimeDisplay = () => {
-//
-//   setInterval(() => {
-//
-//     timer_display.innerHTML = (new Date() - load_time) + ' ' + msecs;
-//   }, 100)
-// }
-// updateTimeDisplay()
 
 const log_button = document.querySelector('#log-button');
 
@@ -331,11 +301,11 @@ const load_button = document.querySelector('#load-button');
 let test_shapes = [
   {x:50,y:300,w:90,h:350,s:'square',c:'yellow'},
   {x:100,y:100,w:200,h:200,s:'square',c:'blue'},
-  {x:150,y:250,w:300,h:350,s:'square',c:'red'},
-  {x:350,y:150,w:500,h:200,s:'square',c:'yellow'},
+  {x:150,y:250,w:300,h:350,s:'triangle-nw',c:'red'},
+  {x:350,y:150,w:500,h:200,s:'triangle-ne',c:'yellow'},
   {x:400,y:350,w:450,h:400,s:'square',c:'blue'},
-  {x:550,y:450,w:600,h:600,s:'square',c:'yellow'},
-  {x:650,y:250,w:750,h:500,s:'square',c:'red'},
+  {x:550,y:450,w:600,h:600,s:'triangle-sw',c:'yellow'},
+  {x:650,y:250,w:750,h:500,s:'triangle-se',c:'red'},
 ];
 
 const loadTestShapes = () => {

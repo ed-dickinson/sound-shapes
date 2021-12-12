@@ -133,9 +133,19 @@ svg {
 }
 
 #schedule .row {
-  height: 5px;
+  height: 1px;
 }
 
 #schedule .row .child {
-  height: 5px; background-color: grey; width: 10px; position: absolute; opacity: 0.5;
+  height: 1px; background-color: grey; width: 10px; position: absolute; opacity: 0.5;
+}
+
+#play-button {
+  position: fixed;
+  bottom: 2em; left: 5px; cursor: help;
+}
+
+.schedule-info {
+  position: absolute; top: 0;
+  font-size: 0.5em;
 }
