@@ -1,6 +1,22 @@
-
+// doesn't catch first one at the moment - do lookahead that looks over the loop?
 
 //////////////////////////////////////////////////////////////
+//OPTIONS
+
+let optionsOpen = false;
+const options_box = document.querySelector('#options');
+
+const openOptions = (e) => {
+  if (e.code === 'KeyO') {
+    optionsOpen ? options_box.style.display = 'none' : options_box.style.display = 'block';
+    optionsOpen = !optionsOpen;
+  }
+}
+
+document.addEventListener('keydown', openOptions);
+
+
+//////////
 
 const audioContext = new AudioContext();
 
@@ -108,7 +124,7 @@ let canvas_width = canvas.offsetWidth;
 let canvas_height = canvas.offsetHeight;
 
 const loFrqLimit = 20;
-const hiFrqLimit = 500;
+const hiFrqLimit = 700;
 
 let tempo = 60.0;
 // const bpmCpontrol
@@ -127,8 +143,11 @@ let current_note = 0;
 let schedule_time = 0;
 
 const yToFrq = (y) => {
-  let frequency = (canvas_height - y) * ((hiFrqLimit - loFrqLimit) / 100) * 0.1;
-  console.log(frequency)
+
+  let freq_range = hiFrqLimit - loFrqLimit;
+  let canvas_proportion = (canvas_height - y) / canvas_height
+  let frequency = canvas_proportion * freq_range;
+
   return frequency + loFrqLimit;
 }
 
@@ -188,81 +207,34 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
     oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length) :
     oscillator2.frequency.setValueCurveAtTime(curveArray, time, shape_length);
 
-  // } else if (s === 'semicircle-s') {
-  // oscillator2.frequency.setValueAtTime(yToFrq(y), time);
-  //
-  // let curveArray = new Float32Array(30); // change this to adjust with shape-length?
-  // let height = h - y;
-  // let width = w - x;
-  // let radius = width / 2;
-  // let segments = width / curveArray.length;
-  //
-  // curveArray[0] = yToFrq(y); //set start and end to known values
-  // curveArray[curveArray.length - 1] = yToFrq(y);
-  //
-  // for (let i = 1; i < curveArray.length - 1; i++) {
-  //   let x = (segments * i) - (width / 2);
-  //   let y2 = (radius * radius) - (x * x);
-  //   let yy = Math.sqrt(y2);
-  //   let adjusted_y = yy * ((height/radius))
-  //   curveArray[i] = yToFrq(y + adjusted_y)
-  // }
-  //
-  // oscillator2.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+  } else if (s === 'semicircle-e' || s === 'semicircle-w') {
 
-} else if (s === 'semicircle-e' || s === 'semicircle-w') {
+    let curve_res = (shape_length*100).toFixed(0);
+    let curveArray = new Float32Array(curve_res); // change this to adjust with shape-length?
+    let curveArray2 = new Float32Array(curve_res);
+    let height = h - y;
+    let width = w - x;
+    let radius = width;
+    let segments = width / curveArray.length;
 
-let curve_res = (shape_length*100).toFixed(0);
-let curveArray = new Float32Array(curve_res); // change this to adjust with shape-length?
-let curveArray2 = new Float32Array(curve_res);
-let height = h - y;
-let width = w - x;
-let radius = width;
-let segments = width / curveArray.length;
+    curveArray[0] = s === 'semicircle-e' ? yToFrq(y) : yToFrq(y + (height/2)); //set start and end to known values
+    curveArray2[0] = yToFrq(s === 'semicircle-e' ? h : y + (height/2));
+    curveArray[curveArray.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : y);
+    curveArray2[curveArray2.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : h);
 
-curveArray[0] = s === 'semicircle-e' ? yToFrq(y) : yToFrq(y + (height/2)); //set start and end to known values
-curveArray2[0] = yToFrq(s === 'semicircle-e' ? h : y + (height/2));
-curveArray[curveArray.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : y);
-curveArray2[curveArray2.length - 1] = yToFrq('semicircle-e' ? y + (height/2) : h);
+    for (let i = 1; i < curveArray.length - 1; i++) {
+      let x = 'semicircle-e' ? (segments * i) : (segments * i) - width;
+      let y2 = (radius * radius) - (x * x);
+      let yy = Math.sqrt(y2);
+      let adjusted_y = yy * ((height/2)/radius)
+      curveArray[i] = yToFrq(h - (height/2) - adjusted_y)
+      curveArray2[i] = yToFrq(y + (height/2) + adjusted_y)
+    }
 
-for (let i = 1; i < curveArray.length - 1; i++) {
-  let x = 'semicircle-e' ? (segments * i) : (segments * i) - width;
-  let y2 = (radius * radius) - (x * x);
-  let yy = Math.sqrt(y2);
-  let adjusted_y = yy * ((height/2)/radius)
-  curveArray[i] = yToFrq(h - (height/2) - adjusted_y)
-  curveArray2[i] = yToFrq(y + (height/2) + adjusted_y)
-}
+    oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length);
+    oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
 
-oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length);
-oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
-
-// } else if (s === 'semicircle-w') {
-//
-// let curveArray = new Float32Array(30); // change this to adjust with shape-length?
-// let curveArray2 = new Float32Array(30);
-// let height = h - y;
-// let width = w - x;
-// let radius = width;
-// let segments = width / curveArray.length;
-//
-// curveArray[0] = yToFrq(y + (height/2)); //set start and end to known values
-// curveArray2[0] = yToFrq(y + (height/2));
-// curveArray[curveArray.length - 1] = yToFrq(y);
-// curveArray2[curveArray2.length - 1] = yToFrq(h);
-//
-// for (let i = 1; i < curveArray.length - 1; i++) {
-//   let x = (segments * i) - width;
-//   let y2 = (radius * radius) - (x * x);
-//   let yy = Math.sqrt(y2);
-//   let adjusted_y = yy * ((height/2)/radius)
-//   curveArray[i] = yToFrq(h - (height/2) - adjusted_y)
-//   curveArray2[i] = yToFrq(y + (height/2) + adjusted_y)
-// }
-//
-// oscillator1.frequency.setValueCurveAtTime(curveArray, time, shape_length);
-// oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
-}
+  }
 
   // let waveShaperNode = audioContext.createWaveShaper();
   // // waveShaperNode.curve = 0;
@@ -301,15 +273,20 @@ oscillator2.frequency.setValueCurveAtTime(curveArray2, time, shape_length);
 
   // not working?
   const clickControlGain = audioContext.createGain();
-  clickControlGain.gain.setValueAtTime(0.1, time);
-  clickControlGain.gain.exponentialRampToValueAtTime(0.001, time + shape_length);
+  clickControlGain.gain.setValueAtTime(0, time);
+  clickControlGain.gain.setValueAtTime(0.1, time + 0.01);
+  clickControlGain.gain.setValueAtTime(0.1, time + shape_length - 0.001);
+  clickControlGain.gain.exponentialRampToValueAtTime(0.00001, time + shape_length);
   oscillator1.connect(clickControlGain);
   oscillator2.connect(clickControlGain);
+  clickControlGain.connect(audioContext.destination);
+  // clickControlGain.connect(oscillator1);
+  // clickControlGain.connect(oscillator2);
 
   // oscillator1.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
   // oscillator2.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
-  oscillator1.connect(primaryGainControl);
-  oscillator2.connect(primaryGainControl);
+  // oscillator1.connect(primaryGainControl);
+  // oscillator2.connect(primaryGainControl);
 
   oscillator1.start(time);
   oscillator2.start(time);
@@ -448,4 +425,16 @@ const schedule_dom = (() => {
   return {reset, add, sched}
 })();
 
-// schedule_dom.add(time);
+const frequency_display = document.querySelector('#frequencies');
+
+let frequency_log = 0;
+while (frequency_log < canvas_height) {
+
+  let disp = document.createElement('div');
+  // row.classList.add('row');
+  disp.innerHTML = frequency_log;
+  disp.innerHTML = yToFrq(frequency_log).toFixed(2);
+  disp.style.top = frequency_log + 'px';
+  frequency_display.appendChild(disp);
+  frequency_log += 50;
+}

@@ -12,6 +12,7 @@ body {
   height: 100%;
   position: fixed;
   top: 0; left: 0;
+  /* z-index: 10; */
 }
 #time-line {
   width: 3px; height: 100%; position: absolute; background-color: lightgrey;
@@ -161,4 +162,55 @@ svg {
 .schedule-info {
   position: absolute; top: 0;
   font-size: 0.5em;
+}
+
+/* option box */
+
+h1 span.drop {
+  font-size: 0.5em;
+}
+h1 span.options {
+  font-size: 0.25em;
+  display: none;
+}
+h1 span.drop:hover + h1 span.options {
+  display: inline;
+}
+
+#options {
+  /* display: none; */
+  /* z-index: 20; */
+  position: fixed;
+  left: 20px;
+}
+#options .heading {
+  margin-bottom: 0.5em;
+}
+#options div:not(div:first-of-type) {
+  font-size: 0.5em;
+  margin-top: 0.5em;
+}
+
+#options div span.title {
+  color: black;
+  cursor: pointer;
+}
+#options div span.option, #options div span.slash {
+  color: darkgrey;
+  cursor: pointer;
+}
+#options div span.selected {
+  color: black;
+}
+
+#frequencies {
+  left: 0;
+  position: fixed; top: 0; height: 100%;
+  font-size: 0.5em;
+
+}
+#frequencies div {
+  left: 0;
+  position: absolute; 
+
 }

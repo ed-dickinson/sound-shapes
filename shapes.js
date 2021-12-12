@@ -298,23 +298,23 @@ const getShapes = () => {
 
 const load_button = document.querySelector('#load-button');
 
-// let test_shapes = [
-//   {x:50,y:300,w:90,h:350,s:'square',c:'yellow'},
-//   {x:100,y:100,w:200,h:200,s:'square',c:'blue'},
-//   {x:150,y:250,w:300,h:350,s:'triangle-nw',c:'red'},
-//   {x:250,y:300,w:350,h:400,s:'semicircle-n',c:'yellow'},
-//   {x:350,y:150,w:500,h:200,s:'triangle-ne',c:'yellow'},
-//   {x:400,y:350,w:450,h:400,s:'square',c:'blue'},
-//   {x:550,y:450,w:600,h:600,s:'triangle-sw',c:'yellow'},
-//   {x:650,y:250,w:750,h:500,s:'triangle-se',c:'red'},
-// ];
-
 let test_shapes = [
-  {x:50,y:100,w:200,h:550,s:'semicircle-e',c:'yellow'},
-  {x:250,y:200,w:390,h:400,s:'semicircle-s',c:'yellow'},
-  {x:400,y:150,w:600,h:600,s:'semicircle-n',c:'blue'},
-  {x:620,y:50,w:780,h:500,s:'semicircle-w',c:'red'},
+  {x:50,y:300,w:90,h:350,s:'square',c:'yellow'},
+  {x:100,y:100,w:200,h:200,s:'square',c:'blue'},
+  {x:150,y:250,w:300,h:350,s:'triangle-nw',c:'red'},
+  {x:250,y:300,w:350,h:400,s:'semicircle-n',c:'yellow'},
+  {x:350,y:150,w:500,h:200,s:'triangle-ne',c:'yellow'},
+  {x:400,y:350,w:450,h:400,s:'square',c:'blue'},
+  {x:550,y:450,w:600,h:600,s:'triangle-sw',c:'yellow'},
+  {x:650,y:250,w:750,h:500,s:'triangle-se',c:'red'},
 ];
+
+// let test_shapes = [
+//   {x:50,y:100,w:200,h:550,s:'semicircle-e',c:'yellow'},
+//   {x:250,y:200,w:390,h:400,s:'semicircle-s',c:'yellow'},
+//   {x:400,y:150,w:600,h:600,s:'semicircle-n',c:'blue'},
+//   {x:620,y:50,w:780,h:500,s:'semicircle-w',c:'red'},
+// ];
 
 const loadTestShapes = () => {
   test_shapes.forEach(shape => {
