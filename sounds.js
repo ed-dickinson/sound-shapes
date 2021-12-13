@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////
 //OPTIONS
 
-let optionsOpen = false;
+let optionsOpen = true;
 const options_box = document.querySelector('#options');
 
 const openOptions = (e) => {
@@ -11,10 +11,48 @@ const openOptions = (e) => {
     optionsOpen ? options_box.style.display = 'none' : options_box.style.display = 'block';
     optionsOpen = !optionsOpen;
   }
+  if (optionsOpen) {
+    if (e.code === 'KeyC') {curve = curve === 'frequency' ? 'filter' : 'frequency'}
+    else if (e.code === 'KeyS') {slope = slope === 'frequency' ? 'filter' : 'frequency'}
+    else if (e.code === 'KeyP') {switchOption(pitch)}
+  }
+}
+
+const switchOption = (option) => {
+  if (option === pitch) {
+    pitch = pitch === 'linear' ? 'exponential' : 'linear';
+    let options = document.querySelectorAll('#options .pitch .option');
+    if (pitch === 'linear') {
+      options[1].classList.remove('selected');
+      options[0].classList.add('selected');
+    } else {
+      options[0].classList.remove('selected');
+      options[1].classList.add('selected');
+    }
+  }
 }
 
 document.addEventListener('keydown', openOptions);
 
+let curve = 'frequency'; //filter
+let slope = 'frequency'; //filter
+let pitch
+          // = 'linear'; //exponential
+          = 'exponential';
+let tuning = 'free';
+
+const pitch_linear = document.querySelector('#options .pitch .linear');
+pitch_linear.addEventListener('click', () => {
+  pitch = 'linear';
+  pitch_exponential.classList.remove('selected');
+  pitch_linear.classList.add('selected');
+});
+const pitch_exponential = document.querySelector('#options .pitch .exponential');
+pitch_exponential.addEventListener('click', () => {
+  pitch = 'exponential';
+  pitch_linear.classList.remove('selected');
+  pitch_exponential.classList.add('selected');
+});
 
 //////////
 
@@ -142,13 +180,33 @@ let current_note = 0;
 
 let schedule_time = 0;
 
+//tuning freqency one octave above a note is given as 2 to the 1 times the note
+// so 3 octaves above is 2 to the 3 times it
+// and 2 fifths of an octave below would be 2 to the -2/5 times it
+// use Math.pow(2, n)
+
+let lo_pow_to_hi = 0;
+while (loFrqLimit * Math.pow(2, lo_pow_to_hi) <= hiFrqLimit) {
+  lo_pow_to_hi += 0.1;
+}
+
+console.log(loFrqLimit * Math.pow(2, lo_pow_to_hi - 0.1), lo_pow_to_hi)
+
 const yToFrq = (y) => {
-
   let freq_range = hiFrqLimit - loFrqLimit;
-  let canvas_proportion = (canvas_height - y) / canvas_height
-  let frequency = canvas_proportion * freq_range;
+  let canvas_proportion = (canvas_height - y) / canvas_height // this is between 0 and 1
 
-  return frequency + loFrqLimit;
+  if (pitch === 'linear') {
+
+    let frequency = canvas_proportion * freq_range;
+
+    return frequency + loFrqLimit;
+  } else if (pitch === 'exponential') {
+    let log_proportion = lo_pow_to_hi * canvas_proportion;
+    return loFrqLimit * Math.pow(2, log_proportion)
+  }
+
+
 }
 
 const scheduleShape = ({s, c, x, y, w, h}, time) => {
@@ -377,7 +435,9 @@ const updateTimeDisplay = () => {
   setInterval(() => {
     // loop_no = ((audioContext.currentTime * 100) % canvas_width)
     let playhead = ((audioContext.currentTime * 100) % canvas_width).toFixed(0);
-    timer_display.innerHTML = audioContext.currentTime.toFixed(3) + 's ' + (new Date() - load_time) + ' ' + playhead + ' loop' + loop;
+    timer_display.innerHTML = audioContext.currentTime.toFixed(3) + 's '
+    // + (new Date() - load_time) + ' '
+    + playhead + ' <sub>loop</sub>' + loop;
 
   }, 100)
   // setInterval(() => {
