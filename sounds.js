@@ -46,13 +46,26 @@ pitch_linear.addEventListener('click', () => {
   pitch = 'linear';
   pitch_exponential.classList.remove('selected');
   pitch_linear.classList.add('selected');
+  frequencyLog();
 });
 const pitch_exponential = document.querySelector('#options .pitch .exponential');
 pitch_exponential.addEventListener('click', () => {
   pitch = 'exponential';
   pitch_linear.classList.remove('selected');
   pitch_exponential.classList.add('selected');
+  frequencyLog();
 });
+
+let tuning_options = document.querySelectorAll('#options .tuning .option');
+tuning_options.forEach(dom => {
+  dom.addEventListener('click', ()=>{
+    tuning = dom.innerHTML;
+    tuning_options.forEach(option => {
+      option.classList.remove('selected')
+    })
+    dom.classList.add('selected');
+  })
+})
 
 //////////
 
@@ -94,45 +107,6 @@ primaryGainControl.gain.setValueAtTime(0.05, 0);
 const secondaryGainControl = audioContext.createGain();
 secondaryGainControl.gain.setValueAtTime(0.01, 0);
 
-// const squareButton = document.querySelector('#shape-picker .square');
-// squareButton.addEventListener('click', () => {
-//   console.log('square');
-//   const squareOscillator = audioContext.createOscillator();
-//   squareOscillator.type = 'square';
-//   squareOscillator.frequency.setValueAtTime(261.6, 0);
-//   squareOscillator.connect(primaryGainControl);
-//   squareOscillator.start();
-//   squareOscillator.stop(audioContext.currentTime + 0.5);
-// })
-//
-// const circleButton = document.querySelector('#shape-picker .circle-se');
-// circleButton.addEventListener('click', () => {
-//   console.log('circle');
-//   const circleOscillator = audioContext.createOscillator();
-//   circleOscillator.type = 'sine';
-//   circleOscillator.frequency.setValueAtTime(261.6, 0);
-//   circleOscillator.connect(primaryGainControl);
-//   circleOscillator.start();
-//   circleOscillator.stop(audioContext.currentTime + 0.5);
-// })
-//
-// const triangleButton = document.querySelector('#shape-picker .triangle-sw');
-// triangleButton.addEventListener('click', () => {
-//   console.log('triangle');
-//   const triangleOscillator = audioContext.createOscillator();
-//   triangleOscillator.type = 'triangle';
-//   triangleOscillator.frequency.setValueAtTime(293.66, 0);
-//   triangleOscillator.frequency.linearRampToValueAtTime(261.6, audioContext.currentTime + 0.25) // 293.66 / 349.23
-//
-//   const triangleGain = audioContext.createGain();
-//   triangleGain.gain.setValueAtTime(1, 0);
-//   triangleGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.25);
-//   triangleOscillator.connect(triangleGain);
-//
-//   triangleOscillator.connect(primaryGainControl);
-//   triangleOscillator.start(1);
-//   triangleOscillator.stop(audioContext.currentTime + 0.5);
-// })
 
 //shape colour, x, y (top left coords), w, h (bottom right coords)
 const playShape = (s, c, x, y, w, h) => {
@@ -195,18 +169,25 @@ console.log(loFrqLimit * Math.pow(2, lo_pow_to_hi - 0.1), lo_pow_to_hi)
 const yToFrq = (y) => {
   let freq_range = hiFrqLimit - loFrqLimit;
   let canvas_proportion = (canvas_height - y) / canvas_height // this is between 0 and 1
+  let frequency;
 
   if (pitch === 'linear') {
 
-    let frequency = canvas_proportion * freq_range;
+    let uncompensated_frequency = canvas_proportion * freq_range;
 
-    return frequency + loFrqLimit;
+    frequency = uncompensated_frequency + loFrqLimit;
   } else if (pitch === 'exponential') {
     let log_proportion = lo_pow_to_hi * canvas_proportion;
-    return loFrqLimit * Math.pow(2, log_proportion)
+
+    if (tuning.includes('TET')) {
+      let n_tet = tuning.slice(0, -3);
+      log_proportion = Math.round(log_proportion * n_tet) / n_tet;
+    }
+
+    frequency = loFrqLimit * Math.pow(2, log_proportion)
   }
 
-
+  return frequency;
 }
 
 const scheduleShape = ({s, c, x, y, w, h}, time) => {
@@ -487,14 +468,19 @@ const schedule_dom = (() => {
 
 const frequency_display = document.querySelector('#frequencies');
 
-let frequency_log = 0;
-while (frequency_log < canvas_height) {
 
-  let disp = document.createElement('div');
-  // row.classList.add('row');
-  disp.innerHTML = frequency_log;
-  disp.innerHTML = yToFrq(frequency_log).toFixed(2);
-  disp.style.top = frequency_log + 'px';
-  frequency_display.appendChild(disp);
-  frequency_log += 50;
+const frequencyLog = () => {
+  let frequency_log = 0;
+  frequency_display.innerHTML = '';
+  while (frequency_log < canvas_height) {
+
+    let disp = document.createElement('div');
+    // row.classList.add('row');
+    disp.innerHTML = frequency_log;
+    disp.innerHTML = yToFrq(frequency_log).toFixed(2);
+    disp.style.top = frequency_log + 'px';
+    frequency_display.appendChild(disp);
+    frequency_log += 50;
+  }
 }
+frequencyLog();
