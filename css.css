@@ -156,7 +156,7 @@ svg {
 
 #play-button {
   position: fixed;
-  bottom: 2em; left: 5px; cursor: help;
+  bottom: 2em; left: 50px; cursor: help;
 }
 
 .schedule-info {
@@ -181,7 +181,7 @@ h1 span.drop:hover + h1 span.options {
   /* display: none; */
   /* z-index: 20; */
   position: fixed;
-  left: 20px;
+  left: 60px;
 }
 #options .heading {
   margin-bottom: 0.5em;
@@ -211,6 +211,6 @@ h1 span.drop:hover + h1 span.options {
 }
 #frequencies div {
   left: 0;
-  position: absolute; 
+  position: absolute;
 
 }

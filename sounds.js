@@ -1,4 +1,6 @@
 // doesn't catch first one at the moment - do lookahead that looks over the loop?
+// THIS IS CAUSE X & W AND H & Y ARE THE SAME!
+
 
 //////////////////////////////////////////////////////////////
 //OPTIONS
@@ -104,8 +106,8 @@ for (let i = 0; i < buffer.length; i++) {
 const primaryGainControl = audioContext.createGain();
 primaryGainControl.gain.setValueAtTime(0.05, 0);
 
-const secondaryGainControl = audioContext.createGain();
-secondaryGainControl.gain.setValueAtTime(0.01, 0);
+// const secondaryGainControl = audioContext.createGain();
+// secondaryGainControl.gain.setValueAtTime(0.01, 0);
 
 
 //shape colour, x, y (top left coords), w, h (bottom right coords)
@@ -118,7 +120,7 @@ const playShape = (s, c, x, y, w, h) => {
 }
 
 primaryGainControl.connect(audioContext.destination);
-secondaryGainControl.connect(audioContext.destination);
+// secondaryGainControl.connect(audioContext.destination);
 
 
 ////////
@@ -141,7 +143,7 @@ const hiFrqLimit = 700;
 let tempo = 60.0;
 // const bpmCpontrol
 
-const lookahead = 25.0; // how frequently to call scheduling function (in milliseconds)
+const lookahead = 100.0; // how frequently to call scheduling function (in milliseconds)
 const scheduleAheadTime = 0.1; // how far ahead to schedule audio (sec)
 
 
@@ -191,6 +193,7 @@ const yToFrq = (y) => {
 }
 
 const scheduleShape = ({s, c, x, y, w, h}, time) => {
+  // console.log(audioContext.currentTime, ': scheduling...', c, s, time)
   let shape_length = ((w - x) / 100);
 
   const oscillator1 = audioContext.createOscillator();
@@ -319,19 +322,22 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   oscillator1.connect(clickControlGain);
   oscillator2.connect(clickControlGain);
   clickControlGain.connect(audioContext.destination);
+
   // clickControlGain.connect(oscillator1);
   // clickControlGain.connect(oscillator2);
 
   // oscillator1.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
   // oscillator2.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
-  // oscillator1.connect(primaryGainControl);
-  // oscillator2.connect(primaryGainControl);
+  oscillator1.connect(primaryGainControl);
+  oscillator2.connect(primaryGainControl);
 
   oscillator1.start(time);
   oscillator2.start(time);
 
   oscillator1.stop(time + shape_length);
   oscillator2.stop(time + shape_length);
+
+  console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
 }
 
 let loop = 0;
@@ -345,7 +351,6 @@ const scheduler = () => {
   let current_time = audioContext.currentTime;
   // while () next 100s contains notes to play, schedule them, and add to notes played this loop
 
-  // while (current_shapes.in)
   current_shapes.forEach(shape=> {
     // console.log(shapes_scheduled.indexOf(shape));
     if (
@@ -357,6 +362,7 @@ const scheduler = () => {
       shapes_scheduled.push(shape);
       // console.log(shape)
       schedule_dom.sched(time.toFixed(2), shape.c);
+
     }
   })
 
@@ -400,12 +406,7 @@ play_button.addEventListener('click', () => {
 
 
 
-let msecs = 0;
-const timer1 = () => {
 
-  setInterval(() => {msecs++;}, 1)
-}
-timer1()
 
 const timer_display = document.querySelector('#timer');
 
@@ -416,16 +417,15 @@ const updateTimeDisplay = () => {
   setInterval(() => {
     // loop_no = ((audioContext.currentTime * 100) % canvas_width)
     let playhead = ((audioContext.currentTime * 100) % canvas_width).toFixed(0);
-    timer_display.innerHTML = audioContext.currentTime.toFixed(3) + 's '
-    // + (new Date() - load_time) + ' '
-    + playhead + ' <sub>loop</sub>' + loop;
+    timer_display.innerHTML =
+    // audioContext.currentTime.toFixed(3) + 's '
+    // + (new Date() - load_time) + ' ' +
+    '<sub>' + playhead + 'O<sub> msecs <sub>thru</sub></sub> loop </sub>' + loop;
 
-  }, 100)
+  }, 90)
   // setInterval(() => {
   //
   // }, 100)
-
-
 }
 updateTimeDisplay()
 

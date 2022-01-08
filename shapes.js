@@ -224,10 +224,8 @@ const createShape = (x, y, w, h, colour, shape) => {
   return new_shape;
 }
 
-canvas.addEventListener('mouseup', () => {
+canvas.addEventListener('mouseup', () => { // end draw shape
   canvas.removeEventListener('mousemove', dragSize);
-
-
 
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
     // console.log(event)
@@ -237,6 +235,7 @@ canvas.addEventListener('mouseup', () => {
     if (mousedown.x === event.x || mousedown.y === event.y) {
       selected_shape.changeSize(mousedown.x - 10,mousedown.y - 10,mousedown.x + 10,mousedown.y + 10);
     }
+    getShapes();
     // console.log(rendered_shapes)
   }
 
@@ -246,7 +245,7 @@ let mousedown = {x: 0, y: 0};
 
 let selected_shape = undefined;
 
-canvas.addEventListener('mousedown', () => {
+canvas.addEventListener('mousedown', () => { //start draw shape
 
   // click on shape
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
@@ -273,9 +272,7 @@ const dragSize = () => {
 }
 
 
-
 console.log(canvas.offsetWidth, canvas.offsetHeight)
-
 
 
 const log_button = document.querySelector('#log-button');
