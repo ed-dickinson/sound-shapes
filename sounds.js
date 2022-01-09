@@ -1,108 +1,7 @@
+// doesn't always catch very early shapes
 
-//////////////////////////////////////////////////////////////
-//OPTIONS
 
-let optionsOpen = true;
-const options_box = document.querySelector('#options');
-let displayOn = true;
-let headingOn = true;
-const heading_title = document.querySelector('h1#main-title');
 
-const openOptions = (e) => {
-  if (e.code === 'KeyO') {
-    optionsOpen ? options_box.style.display = 'none' : options_box.style.display = 'block';
-    optionsOpen = !optionsOpen;
-  }
-  if (optionsOpen) {
-    if (e.code === 'KeyC') {curve = curve === 'frequency' ? 'filter' : 'frequency'}
-    else if (e.code === 'KeyS') {slope = slope === 'frequency' ? 'filter' : 'frequency'}
-    else if (e.code === 'KeyP') {switchOption(pitch)}
-  }
-  if (e.code === 'KeyD') {
-    // optionsOpen ? options_box.style.display = 'none' : options_box.style.display = 'block';
-    displayOn = !displayOn;
-    displaySwitch();
-  }
-  if (e.code === 'KeyH') {
-    heading_title.style.display = displayOn ? 'block' : 'none';
-    displayOn = !displayOn;
-  }
-}
-
-const switchOption = (option) => {
-  if (option === pitch) {
-    pitch = pitch === 'linear' ? 'exponential' : 'linear';
-    let options = document.querySelectorAll('#options .pitch .option');
-    if (pitch === 'linear') {
-      options[1].classList.remove('selected');
-      options[0].classList.add('selected');
-    } else {
-      options[0].classList.remove('selected');
-      options[1].classList.add('selected');
-    }
-  }
-}
-
-document.addEventListener('keydown', openOptions);
-
-let curve = 'frequency'; //filter
-let slope = 'frequency'; //filter
-let pitch
-          // = 'linear'; //exponential
-          = 'exponential';
-let tuning = 'free';
-
-const pitch_linear = document.querySelector('#options .pitch .linear');
-pitch_linear.addEventListener('click', () => {
-  pitch = 'linear';
-  pitch_exponential.classList.remove('selected');
-  pitch_linear.classList.add('selected');
-  frequencyLog();
-});
-const pitch_exponential = document.querySelector('#options .pitch .exponential');
-pitch_exponential.addEventListener('click', () => {
-  pitch = 'exponential';
-  pitch_linear.classList.remove('selected');
-  pitch_exponential.classList.add('selected');
-  frequencyLog();
-});
-
-let tuning_options = document.querySelectorAll('#options .tuning .option');
-tuning_options.forEach(dom => {
-  dom.addEventListener('click', ()=>{
-    tuning = dom.innerHTML;
-    tuning_options.forEach(option => {
-      option.classList.remove('selected')
-    })
-    dom.classList.add('selected');
-  })
-})
-
-let display_options = document.querySelectorAll('#options .display .option');
-const displaySwitch = () => {
-  // frequency_display.style.display = displayOn ? 'block' : 'none';
-  // timer_display.style.display = displayOn ? 'block' : 'none';
-  // document.querySelector('#function-buttons').style.display = displayOn ? 'block' : 'none';
-  // play_button.style.display = displayOn ? 'block' : 'none';
-
-  [frequency_display, timer_display, play_button, document.querySelector('#function-buttons')].forEach(element => {
-    element.style.display = displayOn ? 'block' : 'none';
-  })
-
-  display_options.forEach(option => {
-    option.classList.remove('selected')
-    if (displayOn && option.innerHTML === 'On') {option.classList.add('selected')}
-    else if (!displayOn && option.innerHTML === 'Off') {option.classList.add('selected')}
-  })
-  heading_title.style.left = displayOn ? '50px' : '0px';
-  options_box.style.left = displayOn ? '50px' : '0px';
-}
-display_options.forEach(dom => {
-  dom.addEventListener('click', ()=>{
-    displayOn = dom.innerHTML === 'On' ? true : false;
-    displaySwitch();
-  })
-})
 
 //////////
 
@@ -372,7 +271,7 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   oscillator1.stop(time + shape_length);
   oscillator2.stop(time + shape_length);
 
-  // console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
+  console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
 }
 
 let loop = 0;
@@ -418,27 +317,34 @@ const scheduler = () => {
 
 /// play button
 const play_button = document.querySelector('#play-button');
+
+// this is the main loop trigger !!!!!!
 let schedule_interval = setInterval(scheduler, 100);
 
 let playing = true;
 let unplayed = true;
 
-play_button.addEventListener('click', () => {
-  // startAudio;
+activateSound = () => {
   if (unplayed) {
     startAudio;
     unplayed = false;
   }
   else if (playing) {
     clearInterval(schedule_interval)
+    // clearInterval(schedule_timeline);
     playing = false;
-    play_button.innerHTML = 'Start';
+    play_button.innerHTML = 'Sound';
+    // primaryGainControl.gain.setValueAtTime(0, audioContext.currentTime);
   } else {
     schedule_interval = setInterval(scheduler, 100);
+    // schedule_timeline = setInterval(timelineFrame, 10);
     playing = true;
-    play_button.innerHTML = 'Stop';
+    play_button.innerHTML = 'Silence';
+    // primaryGainControl.gain.setValueAtTime(0.05, audioContext.currentTime);
   }
-})
+}
+
+play_button.addEventListener('click', activateSound);
 
 
 
@@ -447,6 +353,8 @@ play_button.addEventListener('click', () => {
 const timer_display = document.querySelector('#timer');
 
 let load_time = new Date();
+
+
 
 const updateTimeDisplay = () => {
 
@@ -469,13 +377,14 @@ updateTimeDisplay()
 
 const timeline = document.querySelector('#time-line');
 
-let id = null;
+let schedule_timeline = null;
+const timelineFrame = () => {
+  timeline.style.left = ( (audioContext.currentTime*100) % canvas_width ) + 'px';
+}
 function timelineMove() {
-  clearInterval(id);
-  id = setInterval(frame, 10);
-  function frame() {
-    timeline.style.left = ( (audioContext.currentTime*100) % canvas_width ) + 'px';
-  }
+  clearInterval(schedule_timeline);
+  schedule_timeline = setInterval(timelineFrame, 10);
+
 }
 timelineMove();
 

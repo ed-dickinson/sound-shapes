@@ -324,10 +324,12 @@ const loadTestShapes = () => {
 load_button.addEventListener('click',loadTestShapes);
 loadTestShapes();
 
-document.querySelector('#clear-button').addEventListener('click',()=>{
+clearShapes = () => {
   current_shapes = [];
   rendered_shapes = [];
   document.querySelectorAll('#canvas svg').forEach(shape=>{
     canvas.removeChild(shape);
   })
-});
+}
+
+document.querySelector('#clear-button').addEventListener('click',clearShapes);

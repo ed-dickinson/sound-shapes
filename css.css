@@ -208,6 +208,10 @@ h1 span.drop:hover + h1 span.options {
   color: black;
 }
 
+#options .second-stage {
+  display: none;
+}
+
 #frequencies {
   left: 0;
   position: fixed; top: 0; height: 100%;
