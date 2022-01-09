@@ -1,12 +1,12 @@
-// doesn't catch first one at the moment - do lookahead that looks over the loop?
-// THIS IS CAUSE X & W AND H & Y ARE THE SAME!
-
 
 //////////////////////////////////////////////////////////////
 //OPTIONS
 
 let optionsOpen = true;
 const options_box = document.querySelector('#options');
+let displayOn = true;
+let headingOn = true;
+const heading_title = document.querySelector('h1#main-title');
 
 const openOptions = (e) => {
   if (e.code === 'KeyO') {
@@ -17,6 +17,15 @@ const openOptions = (e) => {
     if (e.code === 'KeyC') {curve = curve === 'frequency' ? 'filter' : 'frequency'}
     else if (e.code === 'KeyS') {slope = slope === 'frequency' ? 'filter' : 'frequency'}
     else if (e.code === 'KeyP') {switchOption(pitch)}
+  }
+  if (e.code === 'KeyD') {
+    // optionsOpen ? options_box.style.display = 'none' : options_box.style.display = 'block';
+    displayOn = !displayOn;
+    displaySwitch();
+  }
+  if (e.code === 'KeyH') {
+    heading_title.style.display = displayOn ? 'block' : 'none';
+    displayOn = !displayOn;
   }
 }
 
@@ -66,6 +75,32 @@ tuning_options.forEach(dom => {
       option.classList.remove('selected')
     })
     dom.classList.add('selected');
+  })
+})
+
+let display_options = document.querySelectorAll('#options .display .option');
+const displaySwitch = () => {
+  // frequency_display.style.display = displayOn ? 'block' : 'none';
+  // timer_display.style.display = displayOn ? 'block' : 'none';
+  // document.querySelector('#function-buttons').style.display = displayOn ? 'block' : 'none';
+  // play_button.style.display = displayOn ? 'block' : 'none';
+
+  [frequency_display, timer_display, play_button, document.querySelector('#function-buttons')].forEach(element => {
+    element.style.display = displayOn ? 'block' : 'none';
+  })
+
+  display_options.forEach(option => {
+    option.classList.remove('selected')
+    if (displayOn && option.innerHTML === 'On') {option.classList.add('selected')}
+    else if (!displayOn && option.innerHTML === 'Off') {option.classList.add('selected')}
+  })
+  heading_title.style.left = displayOn ? '50px' : '0px';
+  options_box.style.left = displayOn ? '50px' : '0px';
+}
+display_options.forEach(dom => {
+  dom.addEventListener('click', ()=>{
+    displayOn = dom.innerHTML === 'On' ? true : false;
+    displaySwitch();
   })
 })
 
@@ -337,7 +372,7 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   oscillator1.stop(time + shape_length);
   oscillator2.stop(time + shape_length);
 
-  console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
+  // console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
 }
 
 let loop = 0;
@@ -361,15 +396,16 @@ const scheduler = () => {
       scheduleShape(shape, time);
       shapes_scheduled.push(shape);
       // console.log(shape)
-      schedule_dom.sched(time.toFixed(2), shape.c);
+      // schedule_dom.sched(time.toFixed(2), shape.c); // SCHEDULE DEBUGGING
 
     }
   })
 
-  schedule_dom.add(playhead)
+
+  // schedule_dom.add(playhead) // SCHEDULE DEBUGGING
   if (last_schedule > playhead) {
     loop++;
-    schedule_dom.reset();
+    // schedule_dom.reset(); // SCHEDULE DEBUGGING
     shapes_scheduled = [];
   }
 
@@ -443,28 +479,29 @@ function timelineMove() {
 }
 timelineMove();
 
-const schedule_dom = (() => {
-  const dom = document.querySelector('#schedule');
-  const reset = () => dom.innerHTML = '';
-  const add = (time) => {
-    let row = document.createElement('div');
-    row.classList.add('row');
-    let child = document.createElement('div');
-    child.classList.add('child');
-    child.style.left = time + 'px';
-    child.style.width = lookahead + 'px';
-    dom.appendChild(row);
-    row.appendChild(child);
-  };
-  const sched = (time, colour) => {
-    let info = document.createElement('div');
-    info.classList.add('schedule-info');
-    info.style.left = (time*100 % canvas_width) + 'px';
-    info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
-    dom.appendChild(info);
-  }
-  return {reset, add, sched}
-})();
+// shchedule for debugging
+// const schedule_dom = (() => {
+//   const dom = document.querySelector('#schedule');
+//   const reset = () => dom.innerHTML = '';
+//   const add = (time) => {
+//     let row = document.createElement('div');
+//     row.classList.add('row');
+//     let child = document.createElement('div');
+//     child.classList.add('child');
+//     child.style.left = time + 'px';
+//     child.style.width = lookahead + 'px';
+//     dom.appendChild(row);
+//     row.appendChild(child);
+//   };
+//   const sched = (time, colour) => {
+//     let info = document.createElement('div');
+//     info.classList.add('schedule-info');
+//     info.style.left = (time*100 % canvas_width) + 'px';
+//     info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
+//     dom.appendChild(info);
+//   }
+//   return {reset, add, sched}
+// })();
 
 const frequency_display = document.querySelector('#frequencies');
 
@@ -472,6 +509,7 @@ const frequency_display = document.querySelector('#frequencies');
 const frequencyLog = () => {
   let frequency_log = 0;
   frequency_display.innerHTML = '';
+  frequency_display.style.display = displayOn ? 'block' : 'none';
   while (frequency_log < canvas_height) {
 
     let disp = document.createElement('div');

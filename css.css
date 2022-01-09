@@ -92,6 +92,11 @@ svg.circle path {
   d: path('M 2 1 A 1 1 0 0 1 0 1 A 1 1 0 0 1 2 1');
 }
 
+/* title */
+h1#main-title {
+  position: relative; left: 50px;
+}
+
 #shape-picker {
   position: fixed;
   bottom: 5px; left: 5px;
@@ -180,8 +185,8 @@ h1 span.drop:hover + h1 span.options {
 #options {
   /* display: none; */
   /* z-index: 20; */
-  position: fixed;
-  left: 60px;
+  position: relative;
+  left: 50px;
 }
 #options .heading {
   margin-bottom: 0.5em;
