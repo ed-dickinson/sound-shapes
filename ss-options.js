@@ -27,19 +27,50 @@ const openOptions = (e) => {
       activateSwitch();
       break;
     case 'KeyB':
-      blankCanvasSelect();
+      blankCanvasSwitch();
       break;
+
   }
 
   if (optionsOpen) {
-    if (e.code === 'KeyC') {curve = curve === 'frequency' ? 'filter' : 'frequency'}
-    else if (e.code === 'KeyS') {slope = slope === 'frequency' ? 'filter' : 'frequency'}
-    else if (e.code === 'KeyP') {switchOption(pitch)}
+    switch (e.code) {
+      case 'KeyC':
+        curve = curve === 'frequency' ? 'filter' : 'frequency';
+        document.querySelectorAll('#options .curve .option').forEach(option => {
+          option.classList.toggle('selected');
+        })
+        break;
+      case 'KeyS':
+        slope = slope === 'frequency' ? 'filter' : 'frequency';
+        document.querySelectorAll('#options .slope .option').forEach(option => {
+          option.classList.toggle('selected');
+        })
+        break;
+      case 'KeyP':
+        switchOption(pitch);
+        break;
+      case 'KeyT':
+        let tuning_index;
+        tuning_options.forEach(option => {
+          if (tuning === option.innerHTML) {
+            tuning_index = Array.from(tuning_options).indexOf(option);
+          }
+        })
+
+        tuning_index === tuning_options.length - 1 ? tuning_index = 0 : tuning_index++;
+
+        tuning = tuning_options[tuning_index].innerHTML;
+        tuning_options.forEach(option => {
+          option.classList.remove('selected')
+        })
+        tuning_options[tuning_index].classList.add('selected')
+        break;
+    }
   }
 
   if (blank_canvas_2nd_stage_active) {
-    if (e.code === 'KeyY') {clearShapes(); blankCanvasSelect();}
-    else if (e.code === 'KeyN') {blankCanvasSelect();}
+    if (e.code === 'KeyY' || e.code === 'Enter') {clearShapes(); blankCanvasSwitch();}
+    else if (e.code === 'KeyN') {blankCanvasSwitch();}
   }
 }
 
@@ -57,6 +88,15 @@ const switchOption = (option) => {
   }
 }
 
+// const cycleOption = (option, options) => {
+//   option = option === 'frequency' ? 'filter' : 'frequency';
+//   options.forEach(x => {
+//     x.classList.remove('selected');
+//     if (x.innerHTML === option) {}
+//   })
+//   return option
+// }
+
 document.addEventListener('keydown', openOptions);
 
 let curve = 'frequency'; //filter
@@ -64,7 +104,7 @@ let slope = 'frequency'; //filter
 let pitch
           // = 'linear'; //exponential
           = 'exponential';
-let tuning = 'free';
+let tuning = 'Free';
 
 const pitch_linear = document.querySelector('#options .pitch .linear');
 pitch_linear.addEventListener('click', () => {
@@ -130,16 +170,17 @@ activate_options.forEach(dom => {
 })
 
 const blank_canvas_2nd_stage = document.querySelector('#options .blank-canvas .second-stage');
+const blank_canvas_button = document.querySelector('.blank-canvas > .slash');
 let blank_canvas_2nd_stage_active = false;
-const blankCanvasSelect = () => {
+const blankCanvasSwitch = () => {
   blank_canvas_2nd_stage_active = !blank_canvas_2nd_stage_active;
   blank_canvas_2nd_stage.style.display = blank_canvas_2nd_stage_active ? 'inline' : 'none';
-
+  blank_canvas_button.classList.toggle('slash');
 }
-document.querySelector('.blank-canvas > .slash').addEventListener('click', blankCanvasSelect);
+blank_canvas_button.addEventListener('click', blankCanvasSwitch);
 document.querySelectorAll('#options .blank-canvas .second-stage .option').forEach(dom => {
   dom.addEventListener('click', () => {
     if (dom.innerHTML === 'Yes') {clearShapes();}
-    blankCanvasSelect();
+    blankCanvasSwitch();
   })
 })
