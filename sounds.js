@@ -134,6 +134,13 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   const oscillator2 = audioContext.createOscillator();
   // oscillator.type = s.includes('triangle') ? 'triangle' : s.includes('circle') ? 'sine' : 'square';
 
+  let filter = audioContext.createBiquadFilter();
+  // filter.type = 'bandpass';
+  filter.type = 'highpass';
+  filter.frequency.value = yToFrq(300);
+
+
+
   // oscillator1.type = c === 'blue' ? 'square' : c === 'red' ? 'sine' : 'triangle';
   // oscillator2.type = c === 'blue' ? 'square' : c === 'red' ? 'sine' : 'triangle';
   // oscillator1.setPeriodicWave(wave);
@@ -145,15 +152,30 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   oscillator1.frequency.setValueAtTime(yToFrq(y), 0);
   oscillator2.frequency.setValueAtTime(yToFrq(h), 0);
   if (s === 'triangle-nw') {
-    oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
+    // console.log(slope)
+    // if (slope === 'filter' ) {
+    //   filter.frequency.setValueAtTime(yToFrq(h), time);
+    //   console.log(filter.frequency.value)
+    //   filter.frequency.linearRampToValueAtTime(yToFrq(y), time + shape_length)
+    // } else {
+    //   oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
+    // }
+
+    // oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
+    oscillator2.frequency.linearRampToValueAtTime(yToFrq(y), time + shape_length)
   } else if (s === 'triangle-ne') {
-    oscillator2.frequency.setValueAtTime(canvas_height - y, time);
-    oscillator2.frequency.linearRampToValueAtTime(canvas_height - h, time + shape_length)
+    // oscillator2.frequency.setValueAtTime(canvas_height - y, time);
+    // oscillator2.frequency.linearRampToValueAtTime(canvas_height - h, time + shape_length)
+    oscillator2.frequency.setValueAtTime(yToFrq(y), time);
+    oscillator2.frequency.linearRampToValueAtTime(yToFrq(h), time + shape_length)
   } else if (s === 'triangle-se') {
-    oscillator1.frequency.setValueAtTime(canvas_height - h, time);
-    oscillator1.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
+    // oscillator1.frequency.setValueAtTime(canvas_height - h, time);
+    // oscillator1.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
+    oscillator1.frequency.setValueAtTime(yToFrq(h), time);
+    oscillator1.frequency.linearRampToValueAtTime(yToFrq(y), time + shape_length)
   } else if (s === 'triangle-sw') {
-    oscillator1.frequency.linearRampToValueAtTime(canvas_height - h, time + shape_length)
+    // oscillator1.frequency.linearRampToValueAtTime(canvas_height - h, time + shape_length)
+    oscillator1.frequency.linearRampToValueAtTime(yToFrq(h), time + shape_length)
   }
     else if (s === 'semicircle-n'|| s ==='semicircle-s') {
 
@@ -262,8 +284,17 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
 
   // oscillator1.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
   // oscillator2.connect(c === 'blue' ? secondaryGainControl : primaryGainControl);
-  oscillator1.connect(primaryGainControl);
-  oscillator2.connect(primaryGainControl);
+  // filter.connect(oscillator1)
+  // oscillator1.connect(primaryGainControl);
+  // oscillator2.connect(primaryGainControl);
+  // oscillator1.connect(filter).connect(primaryGainControl);
+  // oscillator2.connect(filter).connect(primaryGainControl);
+  oscillator1.connect(filter);
+  oscillator2.connect(filter);
+  filter.connect(primaryGainControl);
+
+  // oscillator1.connect(filter).connect(audioContext.destination);
+  // oscillator2.connect(filter).connect(audioContext.destination);//.connect(audioContext.destination);
 
   oscillator1.start(time);
   oscillator2.start(time);

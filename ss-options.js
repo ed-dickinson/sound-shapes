@@ -56,9 +56,7 @@ const openOptions = (e) => {
             tuning_index = Array.from(tuning_options).indexOf(option);
           }
         })
-
         tuning_index === tuning_options.length - 1 ? tuning_index = 0 : tuning_index++;
-
         tuning = tuning_options[tuning_index].innerHTML;
         tuning_options.forEach(option => {
           option.classList.remove('selected')
@@ -105,6 +103,21 @@ let pitch
           // = 'linear'; //exponential
           = 'exponential';
 let tuning = 'Free';
+
+const curve_options = document.querySelectorAll('#options .curve .option');
+const slope_options = document.querySelectorAll('#options .slope .option');
+[curve_options, slope_options].forEach(options => {
+  options.forEach(dom => {
+    dom.addEventListener('click', () => {
+      options[0].parentNode.classList.contains('curve')
+        ? curve : slope = dom.innerHTML.toLowerCase();
+      options.forEach(option => {
+        option.classList.remove('selected')
+      })
+      dom.classList.add('selected')
+    })
+  })
+})
 
 const pitch_linear = document.querySelector('#options .pitch .linear');
 pitch_linear.addEventListener('click', () => {
@@ -160,10 +173,12 @@ display_options.forEach(dom => {
 
 let activate_options = document.querySelectorAll('#options .activate .option');
 const activateSwitch = () => {
+  activateSound();
   activate_options.forEach(dom => {
     dom.classList.remove('selected');
   })
   playing ? activate_options[0].classList.add('selected') : activate_options[1].classList.add('selected');
+
 }
 activate_options.forEach(dom => {
   dom.addEventListener('click', activateSwitch);
