@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title></title>
+<title>Sound Shapes</title>
 <meta charset="UTF-8">
 <meta name="keywords" content="">
 <meta name="description" content="">
@@ -17,10 +17,20 @@
 <body>
 
 <main>
-  <h1 id="main-title">Sound Shapes
-    <!-- <span class="drop">v</span> -->
+  <div class="greeter">
+    <h1>Sound Shapes</h1>
+    <p>Click & hold anywhere to draw a shape,</p>
+    <p>
+      Click a shape to change it's shape,
+    </p>
+    <p>
+      Click & hold to change it's colour.
+    </p>
+  </div>
+  <!-- <h1 id="main-title">Sound Shapes
+
     <span class="options"> (OPTIONS)</span>
-  </h1>
+  </h1> -->
   <div id="cloner">
     <!-- <div class="cloner-cont"> -->
       <svg class="shape square blue" viewBox="0 0 2 2" preserveAspectRatio="none"><path></path></svg>
@@ -37,6 +47,9 @@
 
   </div> -->
 
+  <div id="delete">
+    x
+  </div>
 
   <div id="canvas">
     <div id="time-line">
@@ -44,10 +57,10 @@
     </div>
   </div>
 
-<div id="timer">
+<!-- <div id="timer">
   <span id="timer1">xxx</span>
   <span id="timer2">xxx</span>
-</div>
+</div> -->
 
 <!-- <div id="log-display">
   LOG:
@@ -55,6 +68,8 @@
 
   </div>
 </div> -->
+
+
 
 <div id="schedule">
 
@@ -64,7 +79,7 @@
 
 </div>
 
-<div id="options">
+<!-- <div id="options">
   <div class="heading">Options (o):</div>
   <div class="curve">
     <span class="title">Curve: </span> <span class="selected option">Frequency</span> <span class="slash">/</span> <span class="option">Filter</span>
@@ -96,7 +111,7 @@
         <span class="title"> You Sure? </span> <span class="option">Yes</span> <span class="slash">/</span> <span class="option">No</span>
       </span>
   </div>
-</div>
+</div> -->
 
   <!-- <div id="readout">
     readout:
@@ -116,9 +131,10 @@
 <!-- <button id="play-button">Play/Pause</button> -->
 <!-- <script src="music.js"></script> -->
 
-<!-- <input type="range" min="1" max="100" value="50" class="slider" id="slider1"> -->
   <!-- </div> -->
-  <div id="function-buttons">
+
+
+  <!-- <div id="function-buttons">
     <span id="log-button">
       Log Rendered Shapes
     </span>
@@ -134,7 +150,7 @@
 
   <div id="play-button">
     Silence
-  </div>
+  </div> -->
 
 
 </main>
@@ -149,7 +165,7 @@
 
 
 <script src="shapes.js"></script>
-<script src="ss-options.js"></script>
+<!-- <script src="ss-options.js"></script> -->
 <script src="sounds.js"></script>
 
 <script>
