@@ -326,7 +326,7 @@ const scheduler = () => {
       scheduleShape(shape, time);
       shapes_scheduled.push(shape);
       // console.log(shape)
-      schedule_dom.sched(time.toFixed(2), shape.c); // SCHEDULE DEBUGGING
+      schedule_dom.sched(time.toFixed(2), shape); // SCHEDULE DEBUGGING
 
     }
   })
@@ -429,11 +429,13 @@ const schedule_dom = (() => {
     dom.appendChild(row);
     row.appendChild(child);
   };
-  const sched = (time, colour) => {
+  const sched = (time, shape) => {
     let info = document.createElement('div');
     info.classList.add('schedule-info');
     info.style.left = (time*100 % canvas_width) + 'px';
-    info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
+    info.style.top = `${shape.h}px`;
+    // info.innerHTML = (time*100 % canvas_width).toFixed(0) + shape.x + '<br>' + shape.c;
+    info.innerHTML = `${(time*100 % canvas_width).toFixed(0)},${shape.y}<br>${shape.c}<br>${shape.w-shape.x}x${shape.h-shape.y}`;
     dom.appendChild(info);
   }
   return {reset, add, sched}

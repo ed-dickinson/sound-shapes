@@ -1,3 +1,5 @@
+let debug_shapes = true
+
 const canvas = document.querySelector('#canvas');
 
 let rendered_shapes = [];
