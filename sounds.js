@@ -1,6 +1,15 @@
+// https://www.simplifyingtheory.com/math-in-music/
+// https://incidentnormal.github.io/2014/pitch-shift-calculations/
+// http://techlib.com/reference/musical_note_frequencies.htm
+
 // doesn't always catch very early shapes
 
-
+let curve = 'frequency'; //filter
+let slope = 'frequency'; //filter
+let pitch
+          // = 'linear'; //exponential
+          = 'exponential';
+let tuning = 'Free';
 
 
 //////////
@@ -45,13 +54,12 @@ primaryGainControl.gain.setValueAtTime(0.05, 0);
 
 
 //shape colour, x, y (top left coords), w, h (bottom right coords)
-const playShape = (s, c, x, y, w, h) => {
-  const oscillator = audioContext.createOscillator();
-  console.log(s);
-  oscillator.type = s.includes('triangle') ? 'triangle' : s.includes('circle') ? 'sine' : 'square';
-  // oscillator.gain
-  console.log(s);
-}
+// const playShape = (s, c, x, y, w, h) => {
+//   const oscillator = audioContext.createOscillator();
+//
+//   oscillator.type = s.includes('triangle') ? 'triangle' : s.includes('circle') ? 'sine' : 'square';
+//
+// }
 
 primaryGainControl.connect(audioContext.destination);
 // secondaryGainControl.connect(audioContext.destination);
@@ -60,7 +68,6 @@ primaryGainControl.connect(audioContext.destination);
 ////////
 // wavetables
 
-// const wave = audioContext.createPeriodicWave(ethnic33.real, ethnic33.imag)
 const wave1 = audioContext.createPeriodicWave(celeste.real, celeste.imag)
 const wave2 = audioContext.createPeriodicWave(bass.real, bass.imag)
 const wave3 = audioContext.createPeriodicWave(dynaep_med.real, dynaep_med.imag)
@@ -139,16 +146,9 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   filter.type = 'highpass';
   filter.frequency.value = yToFrq(300);
 
-
-
-  // oscillator1.type = c === 'blue' ? 'square' : c === 'red' ? 'sine' : 'triangle';
-  // oscillator2.type = c === 'blue' ? 'square' : c === 'red' ? 'sine' : 'triangle';
-  // oscillator1.setPeriodicWave(wave);
-  // oscillator2.setPeriodicWave(wave);
   oscillator1.setPeriodicWave(c === 'blue' ? wave3 : c === 'red' ? wave2 : wave1);
   oscillator2.setPeriodicWave(c === 'blue' ? wave3 : c === 'red' ? wave2 : wave1);
 
-  // oscillator.gain
   oscillator1.frequency.setValueAtTime(yToFrq(y), 0);
   oscillator2.frequency.setValueAtTime(yToFrq(h), 0);
   if (s === 'triangle-nw') {
@@ -160,8 +160,6 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
     // } else {
     //   oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
     // }
-
-    // oscillator2.frequency.linearRampToValueAtTime(canvas_height - y, time + shape_length)
     oscillator2.frequency.linearRampToValueAtTime(yToFrq(y), time + shape_length)
   } else if (s === 'triangle-ne') {
     // oscillator2.frequency.setValueAtTime(canvas_height - y, time);
@@ -272,9 +270,11 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   // not working?
   const clickControlGain = audioContext.createGain();
   clickControlGain.gain.setValueAtTime(0, time);
-  clickControlGain.gain.setValueAtTime(0.1, time + 0.01);
-  clickControlGain.gain.setValueAtTime(0.1, time + shape_length - 0.001);
-  clickControlGain.gain.exponentialRampToValueAtTime(0.00001, time + shape_length);
+  clickControlGain.gain.linearRampToValueAtTime(0.1, time + 0.01);
+  clickControlGain.gain.setValueAtTime(0.1, time + shape_length - 0.01);
+  clickControlGain.gain.linearRampToValueAtTime(0, time + shape_length);
+  // clickControlGain.gain.exponentialRampToValueAtTime(0.00001, time + shape_length);
+
   oscillator1.connect(clickControlGain);
   oscillator2.connect(clickControlGain);
   clickControlGain.connect(audioContext.destination);
@@ -289,9 +289,9 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   // oscillator2.connect(primaryGainControl);
   // oscillator1.connect(filter).connect(primaryGainControl);
   // oscillator2.connect(filter).connect(primaryGainControl);
-  oscillator1.connect(filter);
-  oscillator2.connect(filter);
-  filter.connect(primaryGainControl);
+  // oscillator1.connect(filter);
+  // oscillator2.connect(filter);
+  // filter.connect(primaryGainControl);
 
   // oscillator1.connect(filter).connect(audioContext.destination);
   // oscillator2.connect(filter).connect(audioContext.destination);//.connect(audioContext.destination);
@@ -326,7 +326,7 @@ const scheduler = () => {
       scheduleShape(shape, time);
       shapes_scheduled.push(shape);
       // console.log(shape)
-      // schedule_dom.sched(time.toFixed(2), shape.c); // SCHEDULE DEBUGGING
+      schedule_dom.sched(time.toFixed(2), shape.c); // SCHEDULE DEBUGGING
 
     }
   })
@@ -335,7 +335,7 @@ const scheduler = () => {
   // schedule_dom.add(playhead) // SCHEDULE DEBUGGING
   if (last_schedule > playhead) {
     loop++;
-    // schedule_dom.reset(); // SCHEDULE DEBUGGING
+    schedule_dom.reset(); // SCHEDULE DEBUGGING
     shapes_scheduled = [];
   }
 
@@ -375,7 +375,7 @@ activateSound = () => {
   }
 }
 
-play_button.addEventListener('click', activateSound);
+// play_button.addEventListener('click', activateSound);
 
 
 
@@ -387,22 +387,18 @@ let load_time = new Date();
 
 
 
-const updateTimeDisplay = () => {
-
-  setInterval(() => {
-    // loop_no = ((audioContext.currentTime * 100) % canvas_width)
-    let playhead = ((audioContext.currentTime * 100) % canvas_width).toFixed(0);
-    timer_display.innerHTML =
-    // audioContext.currentTime.toFixed(3) + 's '
-    // + (new Date() - load_time) + ' ' +
-    '<sub>' + playhead + 'O<sub> msecs <sub>thru</sub></sub> loop </sub>' + loop;
-
-  }, 90)
-  // setInterval(() => {
-  //
-  // }, 100)
-}
-updateTimeDisplay()
+// const updateTimeDisplay = () => {
+//
+//   setInterval(() => {
+//
+//     let playhead = ((audioContext.currentTime * 100) % canvas_width).toFixed(0);
+//     timer_display.innerHTML =
+//
+//     '<sub>' + playhead + 'O<sub> msecs <sub>thru</sub></sub> loop </sub>' + loop;
+//
+//   }, 90)
+// }
+// updateTimeDisplay()
 
 /////////////////////////////////////////////
 
@@ -420,28 +416,28 @@ function timelineMove() {
 timelineMove();
 
 // shchedule for debugging
-// const schedule_dom = (() => {
-//   const dom = document.querySelector('#schedule');
-//   const reset = () => dom.innerHTML = '';
-//   const add = (time) => {
-//     let row = document.createElement('div');
-//     row.classList.add('row');
-//     let child = document.createElement('div');
-//     child.classList.add('child');
-//     child.style.left = time + 'px';
-//     child.style.width = lookahead + 'px';
-//     dom.appendChild(row);
-//     row.appendChild(child);
-//   };
-//   const sched = (time, colour) => {
-//     let info = document.createElement('div');
-//     info.classList.add('schedule-info');
-//     info.style.left = (time*100 % canvas_width) + 'px';
-//     info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
-//     dom.appendChild(info);
-//   }
-//   return {reset, add, sched}
-// })();
+const schedule_dom = (() => {
+  const dom = document.querySelector('#schedule');
+  const reset = () => dom.innerHTML = '';
+  const add = (time) => {
+    let row = document.createElement('div');
+    row.classList.add('row');
+    let child = document.createElement('div');
+    child.classList.add('child');
+    child.style.left = time + 'px';
+    child.style.width = lookahead + 'px';
+    dom.appendChild(row);
+    row.appendChild(child);
+  };
+  const sched = (time, colour) => {
+    let info = document.createElement('div');
+    info.classList.add('schedule-info');
+    info.style.left = (time*100 % canvas_width) + 'px';
+    info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
+    dom.appendChild(info);
+  }
+  return {reset, add, sched}
+})();
 
 const frequency_display = document.querySelector('#frequencies');
 
@@ -461,4 +457,4 @@ const frequencyLog = () => {
     frequency_log += 50;
   }
 }
-frequencyLog();
+// frequencyLog();
