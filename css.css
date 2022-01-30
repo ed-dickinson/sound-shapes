@@ -9,6 +9,7 @@ body {
 .greeter {
   text-align: center;
   top: 50%; position: fixed; width: 100%; left: 0; transform: translateY(-50%);
+  transition: 2s opacity;
 }
 .greeter h1 {
   font-size: 2.5em;
@@ -16,6 +17,9 @@ body {
 }
 .greeter p {
   font-size: 0.75em;
+}
+.greeter.hidden {
+  opacity: 0;
 }
 
 #canvas {
