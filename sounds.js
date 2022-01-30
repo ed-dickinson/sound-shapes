@@ -12,6 +12,7 @@ let pitch
 let tuning = 'Free';
 
 
+
 //////////
 
 const audioContext = new AudioContext();
@@ -302,7 +303,7 @@ const scheduleShape = ({s, c, x, y, w, h}, time) => {
   oscillator1.stop(time + shape_length);
   oscillator2.stop(time + shape_length);
 
-  console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
+  // console.log(audioContext.currentTime, ': scheduled.', c, s, x+'-'+h+','+y+'-'+w, time)
 }
 
 let loop = 0;
@@ -326,16 +327,17 @@ const scheduler = () => {
       scheduleShape(shape, time);
       shapes_scheduled.push(shape);
       // console.log(shape)
-      schedule_dom.sched(time.toFixed(2), shape.c); // SCHEDULE DEBUGGING
+      // debug_dom.sched(time.toFixed(2), shape); // SCHEDULE DEBUGGING
+      // debug_dom.shapeCoords(shape); // SCHEDULE DEBUGGING
 
     }
   })
 
 
-  // schedule_dom.add(playhead) // SCHEDULE DEBUGGING
+  // debug_dom.add(playhead) // SCHEDULE DEBUGGING
   if (last_schedule > playhead) {
     loop++;
-    schedule_dom.reset(); // SCHEDULE DEBUGGING
+    debug_dom.reset(); // SCHEDULE DEBUGGING
     shapes_scheduled = [];
   }
 
@@ -387,6 +389,41 @@ let load_time = new Date();
 
 
 
+const debug_dom = (() => {
+  const dom = document.querySelector('#schedule');
+  const reset = () => dom.innerHTML = '';
+  const add = (time) => {
+    let row = document.createElement('div');
+    row.classList.add('row');
+    let child = document.createElement('div');
+    child.classList.add('child');
+    child.style.left = time + 'px';
+    child.style.width = lookahead + 'px';
+    dom.appendChild(row);
+    row.appendChild(child);
+  };
+  const sched = (time, shape) => {
+    let info = document.createElement('div');
+    info.classList.add('schedule-info');
+    info.style.left = (time*100 % canvas_width) + 'px';
+    info.style.top = `${shape.h}px`;
+    // info.innerHTML = (time*100 % canvas_width).toFixed(0) + shape.x + '<br>' + shape.c;
+    info.innerHTML = `${(time*100 % canvas_width).toFixed(0)},${shape.y}<br>${shape.c}<br>${shape.w-shape.x}x${shape.h-shape.y}`;
+    dom.appendChild(info);
+  }
+  const shapeCoords = (shape) => {
+    let info = document.createElement('div');
+    info.classList.add('schedule-info');
+    info.style.left = shape.x + 'px';
+    info.style.top = `${shape.h}px`;
+    info.innerHTML = `${shape.x},${shape.y}<br>${shape.c}<br>${shape.w-shape.x}x${shape.h-shape.y}`;
+    dom.appendChild(info);
+  }
+  return {reset, add, sched, shapeCoords}
+})();
+
+
+
 // const updateTimeDisplay = () => {
 //
 //   setInterval(() => {
@@ -415,29 +452,7 @@ function timelineMove() {
 }
 timelineMove();
 
-// shchedule for debugging
-const schedule_dom = (() => {
-  const dom = document.querySelector('#schedule');
-  const reset = () => dom.innerHTML = '';
-  const add = (time) => {
-    let row = document.createElement('div');
-    row.classList.add('row');
-    let child = document.createElement('div');
-    child.classList.add('child');
-    child.style.left = time + 'px';
-    child.style.width = lookahead + 'px';
-    dom.appendChild(row);
-    row.appendChild(child);
-  };
-  const sched = (time, colour) => {
-    let info = document.createElement('div');
-    info.classList.add('schedule-info');
-    info.style.left = (time*100 % canvas_width) + 'px';
-    info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
-    dom.appendChild(info);
-  }
-  return {reset, add, sched}
-})();
+
 
 const frequency_display = document.querySelector('#frequencies');
 

@@ -11,7 +11,10 @@ const initial_size = 20;
 
 const cloner = document.querySelector('#cloner .shape')
 
+
+
 const Shape = (x, y, w, h, colour, shape) => {
+
 
   // let shape = 'square';
   // let colour = colours[colours_i];
@@ -37,20 +40,13 @@ const Shape = (x, y, w, h, colour, shape) => {
 
   let target = undefined;
   let click_hold = undefined;
-  let moving = false;
 
   let click_hold_timer;
   clone.addEventListener('mousedown', ()=>{
     target = event.path[0].nodeName === "svg" ? event.path[0] : event.path[1]; //nodeName or tagName
     click_hold = false;
     clearTimeout(click_hold_timer)
-    click_hold_timer = setTimeout(()=>{
-      click_hold = true;
-      // clone.style.cursor = 'alias';
-      // if (mousedown.x !== event.x || mousedown.y !== event.y) {
-      if (!moving) {changeColour();}
-      // }
-    },300)
+    click_hold_timer = setTimeout(()=>{click_hold = true; clone.style.cursor = 'alias';},300)
 
     mousedown = {x: event.x, y: event.y};
     let m = 20;
@@ -79,16 +75,6 @@ const Shape = (x, y, w, h, colour, shape) => {
     clone.removeEventListener('mousemove', changeResizeCursor);
   })
 
-  const moveShape = () => {
-    // console.log('moveShape', mousedown.x, mousedown.y, '>',event.x, event.y)
-    moving = true;
-    clone.style.cursor = 'move';
-    clone.style.left = x - (mousedown.x - event.x);
-    clone.style.top = y - (mousedown.y - event.y);
-    delete_function.show();
-    delete_button.addEventListener('mousemove',moveShape);
-    delete_button.addEventListener('mouseup',moveEndDelete);
-  }
   const moveEnd = () => {
     canvas.removeEventListener('mousemove', moveShape)
     clearTimeout(click_hold_timer);
@@ -100,27 +86,10 @@ const Shape = (x, y, w, h, colour, shape) => {
       clone.style.cursor = 'pointer';
     } else {
       clone.style.cursor = 'pointer';
-      // click_hold ? changeColour() : changeShape();
-        if (!click_hold) {changeShape()}
+      click_hold ? changeColour() : changeShape();
     }
-    canvas.removeEventListener('mouseup', moveEndDelete);
+    canvas.removeEventListener('mouseup', moveEnd);
     clone.addEventListener('mousemove', changeResizeCursor);
-    delete_function.hide();
-    delete_button.removeEventListener('mouseup',moveEnd);
-    getShapes();
-    moving = false;
-  }
-
-  const moveEndDelete = () => {
-    canvas.removeEventListener('mousemove', moveShape)
-    clearTimeout(click_hold_timer);
-
-    canvas.removeEventListener('mouseup', moveEndDelete);
-    clone.addEventListener('mousemove', changeResizeCursor);
-    // delete shape
-    deleteShape(clone);
-    delete_function.hide();
-    delete_button.removeEventListener('mouseup',moveEnd);
     getShapes();
   }
 
@@ -235,6 +204,12 @@ const Shape = (x, y, w, h, colour, shape) => {
     clone.style.width = ww - xx + 'px';
     clone.style.height = hh - yy + 'px';
   }
+  const moveShape = () => {
+    // console.log('moveShape', mousedown.x, mousedown.y, '>',event.x, event.y)
+    clone.style.cursor = 'move';
+    clone.style.left = x - (mousedown.x - event.x);
+    clone.style.top = y - (mousedown.y - event.y);
+  }
   const getDetails = () => {
     return {x, y, w, h, c: colour, s: shape}
   }
@@ -251,36 +226,10 @@ const createShape = (x, y, w, h, colour, shape) => {
   return new_shape;
 }
 
-const delete_button = document.querySelector('#delete');
-
-const delete_function = (() => {
-  const button = document.querySelector('#delete');
-  const show = () => {
-    button.classList.add('show');
-    button.style.zIndex = 100;
-    // button.addEventListener('mouseup',moveEnd)
-  }
-  const hide = () => {
-    button.classList.remove('show');
-    button.style.zIndex = 0;
-    // button.removeEventListener('mouseup',moveEnd)
-  }
-  return {show, hide,};
-})();
-
-const deleteShape = (shape) => {
-  // must find reference not just dom
-
-  let shape_to_delete = rendered_shapes.find((x)=>x.dom === shape);
-  let shape_index = rendered_shapes.indexOf(shape_to_delete);
-  rendered_shapes.splice(shape_index, 1)
-  current_shapes.splice(current_shapes.indexOf(shape_to_delete), 1)
-  shape.parentNode.removeChild(shape)
-  console.log(shape_to_delete)
-}
-
-canvas.addEventListener('mouseup', () => { // end draw shape
+canvas.addEventListener('mouseup', () => {
   canvas.removeEventListener('mousemove', dragSize);
+
+
 
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
     // console.log(event)
@@ -290,7 +239,6 @@ canvas.addEventListener('mouseup', () => { // end draw shape
     if (mousedown.x === event.x || mousedown.y === event.y) {
       selected_shape.changeSize(mousedown.x - 10,mousedown.y - 10,mousedown.x + 10,mousedown.y + 10);
     }
-    getShapes();
     // console.log(rendered_shapes)
   }
 
@@ -300,7 +248,12 @@ let mousedown = {x: 0, y: 0};
 
 let selected_shape = undefined;
 
-canvas.addEventListener('mousedown', () => { //start draw shape
+const greeter = document.querySelector('.greeter')
+let greeter_shown = true;
+
+canvas.addEventListener('mousedown', () => {
+
+  greeter.classList.add('hidden');
 
   // click on shape
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
@@ -327,11 +280,13 @@ const dragSize = () => {
 }
 
 
+
 console.log(canvas.offsetWidth, canvas.offsetHeight)
 
 
-const log_button = document.querySelector('#log-button');
 
+// const log_button = document.querySelector('#log-button');
+//
 // log_button.addEventListener('click',()=>{
 //   console.log('shapes:',getShapes())
 // })
@@ -361,13 +316,6 @@ let test_shapes = [
   {x:650,y:250,w:750,h:500,s:'triangle-se',c:'red'},
 ];
 
-// for filtering
-// let test_shapes = [
-//   {x:100,y:200,w:250,h:450,s:'triangle-nw',c:'yellow'},
-//   {x:300,y:100,w:500,h:400,s:'triangle-nw',c:'blue'},
-//   {x:550,y:250,w:700,h:350,s:'triangle-nw',c:'red'},
-// ];
-
 // let test_shapes = [
 //   {x:50,y:100,w:200,h:550,s:'semicircle-e',c:'yellow'},
 //   {x:250,y:200,w:390,h:400,s:'semicircle-s',c:'yellow'},
@@ -379,6 +327,7 @@ const loadTestShapes = () => {
   test_shapes.forEach(shape => {
     let new_shape = createShape(shape.x, shape.y, shape.w, shape.h, shape.c, shape.s)
     // rendered_shapes.push(new_shape);
+    console.log(shape)
   })
   getShapes();
 }
@@ -386,12 +335,10 @@ const loadTestShapes = () => {
 // load_button.addEventListener('click',loadTestShapes);
 loadTestShapes();
 
-clearShapes = () => {
-  current_shapes = [];
-  rendered_shapes = [];
-  document.querySelectorAll('#canvas svg').forEach(shape=>{
-    canvas.removeChild(shape);
-  })
-}
-
-// document.querySelector('#clear-button').addEventListener('click',clearShapes);
+// document.querySelector('#clear-button').addEventListener('click',()=>{
+//   current_shapes = [];
+//   rendered_shapes = [];
+//   document.querySelectorAll('#canvas svg').forEach(shape=>{
+//     canvas.removeChild(shape);
+//   })
+// });
