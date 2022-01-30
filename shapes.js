@@ -11,8 +11,6 @@ const initial_size = 20;
 
 const cloner = document.querySelector('#cloner .shape')
 
-
-
 const Shape = (x, y, w, h, colour, shape) => {
 
 
@@ -248,7 +246,7 @@ let mousedown = {x: 0, y: 0};
 
 let selected_shape = undefined;
 
-const greeter = document.querySelector('.greeter')
+const greeter = document.querySelector('.greeter');
 let greeter_shown = true;
 
 canvas.addEventListener('mousedown', () => {
@@ -285,8 +283,8 @@ console.log(canvas.offsetWidth, canvas.offsetHeight)
 
 
 
-// const log_button = document.querySelector('#log-button');
-//
+const log_button = document.querySelector('#log-button');
+
 // log_button.addEventListener('click',()=>{
 //   console.log('shapes:',getShapes())
 // })
@@ -327,7 +325,6 @@ const loadTestShapes = () => {
   test_shapes.forEach(shape => {
     let new_shape = createShape(shape.x, shape.y, shape.w, shape.h, shape.c, shape.s)
     // rendered_shapes.push(new_shape);
-    console.log(shape)
   })
   getShapes();
 }

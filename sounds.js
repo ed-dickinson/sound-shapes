@@ -381,14 +381,6 @@ activateSound = () => {
 
 
 
-
-
-const timer_display = document.querySelector('#timer');
-
-let load_time = new Date();
-
-
-
 const debug_dom = (() => {
   const dom = document.querySelector('#schedule');
   const reset = () => dom.innerHTML = '';
@@ -402,25 +394,19 @@ const debug_dom = (() => {
     dom.appendChild(row);
     row.appendChild(child);
   };
-  const sched = (time, shape) => {
+  const sched = (time, colour) => {
     let info = document.createElement('div');
     info.classList.add('schedule-info');
     info.style.left = (time*100 % canvas_width) + 'px';
-    info.style.top = `${shape.h}px`;
-    // info.innerHTML = (time*100 % canvas_width).toFixed(0) + shape.x + '<br>' + shape.c;
-    info.innerHTML = `${(time*100 % canvas_width).toFixed(0)},${shape.y}<br>${shape.c}<br>${shape.w-shape.x}x${shape.h-shape.y}`;
+    info.innerHTML = (time*100 % canvas_width).toFixed(0) + '<br>' + colour;
     dom.appendChild(info);
   }
-  const shapeCoords = (shape) => {
-    let info = document.createElement('div');
-    info.classList.add('schedule-info');
-    info.style.left = shape.x + 'px';
-    info.style.top = `${shape.h}px`;
-    info.innerHTML = `${shape.x},${shape.y}<br>${shape.c}<br>${shape.w-shape.x}x${shape.h-shape.y}`;
-    dom.appendChild(info);
-  }
-  return {reset, add, sched, shapeCoords}
+  return {reset, add, sched}
 })();
+
+const timer_display = document.querySelector('#timer');
+
+let load_time = new Date();
 
 
 
