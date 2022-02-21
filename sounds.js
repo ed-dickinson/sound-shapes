@@ -6,6 +6,7 @@
 
 // NEW ISSUE! when creating shapes - sometimes shapes being triggered double, triple. 4x, 5x, etc in volume. i beleive this is because the scheduler is shcheduling them and then rescheduling them when getShapes is called by the shape creation as a new array is there?
 // either a shorter look time or a doubling checker could solve it?
+// i think i fixed this? by checking shape id's instead of shape obj's themselves 
 
 let curve = 'frequency'; //filter
 let slope = 'frequency'; //filter
