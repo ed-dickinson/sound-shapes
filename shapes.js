@@ -48,6 +48,10 @@ const xPress = () => {
     window.addEventListener('keyup', xUnpress);
     window.removeEventListener('keydown', xPress);
   }
+  else if (event.code === 'Space') {
+    greeter.classList.remove('hidden');
+    setTimeout(()=>{greeter.classList.add('hidden')}, 500)
+  }
 }
 window.addEventListener('keydown', xPress);
 
@@ -303,6 +307,7 @@ let greeter_shown = true;
 canvas.addEventListener('mousedown', () => { //start draw shape
 
   greeter.classList.add('hidden');
+  // setTimeout(()=>{greeter.children[0].style.display = 'none'}, 2000)
 
   // click on shape
   if (event.path[1].classList.contains('shape') || event.path[0].classList.contains('shape')) {
